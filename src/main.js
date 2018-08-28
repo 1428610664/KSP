@@ -11,6 +11,7 @@ import Scrollbar from 'smooth-scrollbar'
 import NProgress from 'nprogress'
 import 'nprogress/nprogress.css'
 import iView from 'iview'
+import echarts from 'echarts'
 import './theme/iview/index.less'
 import Api from 'api/Api'
 import publicUtils from 'common/js/publicUtils'
@@ -20,6 +21,7 @@ import VTree from 'vue-tree-halower'
 import 'common/js/common'
 
 Vue.prototype.axios = axios
+Vue.prototype.$echarts = echarts
 Vue.prototype.Scrollbar = Scrollbar
 Vue.config.productionTip = false
 

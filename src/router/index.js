@@ -23,6 +23,11 @@ export default new Router({
       component: (resolve) => require(['../view/index'], resolve),
       children: [
         {
+          name: '季度统计',
+          path: '/quarter',
+          component: (resolve) => require(['../view/statistics/quarter'], resolve),
+        },
+        {
           name: '客户管理',
           path: '/customerManage',
           component: (resolve) => require(['../view/customer/manage'], resolve),
@@ -78,14 +83,29 @@ export default new Router({
           component: (resolve) => require(['../view/maintain/product'], resolve),
         },
         {
+          name: '销售任务',
+          path: '/salesTask',
+          component: (resolve) => require(['../view/maintain/sales-task'], resolve),
+        },
+        {
           name: '用户管理',
           path: '/userManage',
           component: (resolve) => require(['../view/power/user-manage'], resolve),
         },
         {
+          name: '组织结构',
+          path: '/organizationStructure',
+          component: (resolve) => require(['../view/power/organization-structure'], resolve),
+        },
+        {
           name: '角色管理',
           path: '/roleManage',
           component: (resolve) => require(['../view/power/role-manage'], resolve),
+        },
+        {
+          name: '用户权限',
+          path: '/userPermission',
+          component: (resolve) => require(['../view/power/user-permission'], resolve),
         },
         {
           name: '自定义字段',

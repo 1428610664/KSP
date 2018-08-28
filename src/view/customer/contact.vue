@@ -2,12 +2,12 @@
   <div class="wrapper b wrapper-box">
     <div class="clear">
       <div class="fr c3">
-        <span>营销负责人：</span>
-        <Select v-model="principal" :multiple="true" style="width:240px">
+        <span>负责人：</span>
+        <Select v-model="principal" :multiple="true" :filterable="true" style="width:240px">
           <Option v-for="item in userList" :value="item.value" :key="item.value">{{ item.label }}</Option>
         </Select>
-        <span class="m-l5">所属客户：</span>
-        <Select v-model="requestParam.customerId" style="width:160px">
+        <span class="m-l5">客户名称：</span>
+        <Select v-model="requestParam.customerId" :filterable="true" style="width:160px">
           <Option v-for="item in customerList" :value="item.value" :key="item.value">{{ item.label }}</Option>
         </Select>
         <Input v-model="requestParam.keyWord" placeholder="请输入联系人名称..." style="width: 160px" />
@@ -19,10 +19,11 @@
       <Button type="primary" @click="addUserEvent(null, 2)">新增</Button>
       <!--<Button type="primary">导入</Button>-->
       <!--<Button type="primary">导出</Button>-->
+      <table-columns class="fr" :columns="columns" @change="columnsChange"></table-columns>
     </div>
 
     <!--table列表-->
-    <i-table class="m-t10" :columns="columns" :data="data" border size="small" ref="table"></i-table>
+    <i-table class="m-t10" :columns="changeColumns" :data="data" border size="small" ref="table"></i-table>
     <!--分页-->
     <div style="text-align: right; padding-top: 5px;">
       <Page show-total show-sizer show-elevator style="display: inline-block;" placement="top"
@@ -68,6 +69,7 @@
 <script>
 
   import inputFrom from 'components/model/inputFrom.vue'
+  import tableColumns from 'components/table-columns'
   import {mapGetters} from 'vuex'
   import { propsMixin } from 'mixins/propsMixin'
 
@@ -95,8 +97,8 @@
         },
 
         contactList: [],    // 上级联系人
-        userList: [],       // 营销负责人
-        customerList: [],   // 所属客户
+        userList: [],       // 负责人
+        customerList: [],   // 客户名称
         departmentList: [], // 部门
         roleList: [],       // 决策角色
         levelList: [],      // 关系等级
@@ -106,19 +108,19 @@
 
         columns: [
           // {title: '编号', key: 'id', width: 170, sortable: true},
-          {title: '姓名', key: 'name', width: 140, sortable: true, render: this.tdRender},
-          {title: '客户名称', key: 'customerName', width: 160, sortable: true, render: this.tdRender},
-          {title: '性别', key: 'sex', width: 120, sortable: true},
-          {title: '部门', key: 'departmentName', width: 140, sortable: true, render: this.tdRender},
-          {title: '职位', key: 'officer', width: 120, sortable: true, render: this.tdRender},
-          {title: '决策角色', key: 'role', width: 120, sortable: true, render: this.tdRender},
-          {title: '关系等级', key: 'level', width: 120, sortable: true, render: this.tdRender},
-          {title: '手机', key: 'phone', width: 160, sortable: true, render: this.tdRender},
-          {title: '电话', key: 'tel', width: 160, sortable: true, render: this.tdRender},
-          {title: 'Email', key: 'email', width: 160, sortable: true, render: this.tdRender},
-          {title: 'QQ', key: 'qq', width: 140, sortable: true, render: this.tdRender},
-          {title: '负责人', key: 'principalName', width: 160, sortable: true},
-          {title: '操作',
+          {title: '姓名',show: true, key: 'name', width: 140, sortable: true, render: this.tdRender},
+          {title: '客户名称',show: true, key: 'customerName', width: 160, sortable: true, render: this.tdRender},
+          {title: '性别',show: true, key: 'sex', width: 120, sortable: true},
+          {title: '部门',show: true, key: 'departmentName', width: 140, sortable: true, render: this.tdRender},
+          {title: '职位',show: true, key: 'officer', width: 120, sortable: true, render: this.tdRender},
+          {title: '决策角色',show: true, key: 'role', width: 120, sortable: true, render: this.tdRender},
+          {title: '关系等级',show: true, key: 'level', width: 120, sortable: true, render: this.tdRender},
+          {title: '手机',show: true, key: 'phone', width: 160, sortable: true, render: this.tdRender},
+          {title: '电话',show: true, key: 'tel', width: 160, sortable: true, render: this.tdRender},
+          {title: 'Email',show: true, key: 'email', width: 160, sortable: true, render: this.tdRender},
+          {title: 'QQ',show: true, key: 'qq', width: 140, sortable: true, render: this.tdRender},
+          {title: '负责人',show: true, key: 'principalName', width: 160, sortable: true},
+          {title: '操作',show: true,
             width: 140,
             align: 'center',
             render: (h, params) => {
@@ -221,22 +223,23 @@
         this.inputForm.show = true
         this.inputForm.modalDisabled = false
         this.type = type
+        this._clearPropsFromVal()
 
         let opintions = [
             [{title:'姓名',id:'name',type:'input',titlespan:3,colspan:9,required:true},
               {title:'性别',id:'sex',type:'select',titlespan:3,colspan:9,required:false}],
-          [{link: true,linkOpts: [{title:'所属客户',id:'customerId',type:'select-opts',titlespan:3,colspan:9,required:true, url: 'customerList'},
+          [{link: true,linkOpts: [{title:'客户名称',id:'customerId',type:'select-opts', filterable: true,titlespan:3,colspan:9,required:true, url: 'customerList'},
               {title:'上级联系人',id: 'superiors',type:'select-opts',titlespan:3,colspan:9,required: false, url: 'contactList',parmsId: 'customerId'}]}],
-            [{title:'部门',id:'departmentId',type:'select-opts',titlespan:3,colspan:9,relation: '',required:true, select: this.departmentList},
-              {title:'职位',id:'officer',type:'input',titlespan:3,colspan:9,required:true}],
-            [{title:'决策角色',id:'role',type:'select-opts',titlespan:3,colspan:9,relation: '',required:true, select: this.roleList},
-              {title:'关系等级',id:'level',type:'select-opts',titlespan:3,colspan:9,relation: '',required:true, select: this.levelList}],
+            [{title:'部门',id:'departmentId',type:'select-opts',titlespan:3,colspan:9,relation: '',required:false, select: this.departmentList},
+              {title:'职位',id:'officer',type:'input',titlespan:3,colspan:9,required:false}],
+            [{title:'决策角色',id:'role',type:'select-opts',titlespan:3,colspan:9,relation: '',required:false, select: this.roleList},
+              {title:'关系等级',id:'level',type:'select-opts',titlespan:3,colspan:9,relation: '',required:false, select: this.levelList}],
             [{title:'手机',id:'phone',type:'input',titlespan:3,colspan:9,required:false},
               {title:'电话',id:'tel',type:'input',titlespan:3,colspan:9,required:false}],
             [{title:'Email',id:'email',type:'input',titlespan:3,colspan:9,required:false},
               {title:'QQ',id:'qq',type:'input',titlespan:3,colspan:9,required:false}],
             [{title:'籍贯',id:'hometown',type:'input',titlespan:3,colspan:9,required:false},
-              {title:'负责人',id:'principal',type:'select-opts',titlespan:3,colspan:9,relation: '',required:true, select: this.userList}],
+              {title:'负责人',id:'principal',type:'select-opts',titlespan:3,colspan:9, filterable: true,relation: '',required:false, select: this.userList}],
             [{title:'备注',id:'remark',type:'textarea',titlespan:3,colspan:21,required:false}]]
 
         this.inputForm.option = {
@@ -267,6 +270,7 @@
           remark: row ? row.remark : ''
         }
         if(type == 1) {
+          if(row.propsVal) this._setPropsVal(JSON.parse(row.propsVal))
           this.inputForm.value.id = row.id
         }
       },
@@ -287,7 +291,8 @@
       }
     },
     components: {
-      inputFrom
+      inputFrom,
+      tableColumns
     }
   }
 </script>

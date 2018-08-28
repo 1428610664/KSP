@@ -334,6 +334,7 @@
           }
           this.updataUser({id: newVal.id, passWord: newVal.newPsw})
         }else{ // 修改、新增用户
+          delete newVal.passWord
           this.updataUser(newVal)
         }
       },

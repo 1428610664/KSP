@@ -2,8 +2,8 @@
   <div class="wrapper b wrapper-box">
     <div class="clear">
       <div class="fr c3">
-        <span>营销负责人：</span>
-        <Select v-model="principal" :multiple="true" style="width:240px">
+        <span>负责人：</span>
+        <Select v-model="principal" :multiple="true" :filterable="true" style="width:240px">
           <Option v-for="item in userList" :value="item.value" :key="item.value">{{ item.label }}</Option>
         </Select>
         <Input v-model="requestParam.keyWord" placeholder="请输入客户名称..." style="width: 160px" />
@@ -16,10 +16,12 @@
       <!--<Button type="primary">导入</Button>-->
       <!--<Button type="primary">导出</Button>-->
       <span class="" style="line-height: 30px">BP汇总（万元）：<span class="c1 fz14">{{bp}}</span></span>
+
+      <table-columns class="fr" :columns="columns" @change="columnsChange"></table-columns>
     </div>
 
     <!--table列表-->
-    <i-table class="m-t10" :columns="columns" :data="data" border size="small" ref="table"></i-table>
+    <i-table class="m-t10" :columns="changeColumns" :data="data" border size="small" ref="table"></i-table>
     <!--分页-->
     <div style="text-align: right; padding-top: 5px;">
       <Page show-total show-sizer show-elevator style="display: inline-block;" placement="top"
@@ -34,6 +36,7 @@
                 :modalshow="inputForm.modalshow">
 
       <template slot="custom">
+
         <div v-for="(row ,index) in propsOpintions" :key="index" class="customForm">
           <Row :gutter=5>
             <div  v-for="rows in row" :key="rows.title">
@@ -78,6 +81,7 @@
 <script>
 
   import inputFrom from 'components/model/inputFrom.vue'
+  import tableColumns from 'components/table-columns'
   import {mapGetters} from 'vuex'
   import { propsMixin } from 'mixins/propsMixin'
 
@@ -132,7 +136,7 @@
           offset: 1
         },
 
-        userList: [],     // 营销负责人
+        userList: [],     // 负责人
         industryList: [], // 所属行业
         classifyList: [], // 分类
 
@@ -141,17 +145,17 @@
 
         columns: [
           // {title: '编号', key: 'id', width: 170, sortable: true},
-          {title: '客户名称', key: 'name', width: 160, sortable: true, render: this.tdRender},
-          {title: 'BP（万元）', key: 'bp', width: 120, sortable: true},
-          {title: 'SOW（%）', key: 'sow', width: 120, sortable: true},
+          {title: '客户名称',show: true, key: 'name', width: 160, sortable: true, render: this.tdRender},
+          {title: 'BP(万元)',show: true, key: 'bp', width: 120, sortable: true},
+          {title: 'SOW(%)',show: true, key: 'sow', width: 120, sortable: true},
           // {title: 'RFM', key: 'rfm', width: 120, sortable: true},
-          {title: 'RAD', key: 'rad', width: 120, sortable: true},
-          {title: '电话', key: 'phone', width: 160, sortable: true, render: this.tdRender},
-          {title: '传真', key: 'fax', width: 120, sortable: true, render: this.tdRender},
-          {title: '网址', key: 'webUrl', width: 170, sortable: true, render: this.tdRender},
-          {title: '分类', key: 'type', width: 120, sortable: true},
-          {title: '负责人', key: 'principalName', width: 140, sortable: true},
-          {title: '操作',
+          {title: 'RAD',show: true, key: 'rad', width: 120, sortable: true},
+          {title: '电话',show: true, key: 'phone', width: 160, sortable: true, render: this.tdRender},
+          {title: '传真',show: true, key: 'fax', width: 120, sortable: true, render: this.tdRender},
+          {title: '网址',show: true, key: 'webUrl', width: 170, sortable: true, render: this.tdRender},
+          {title: '分类',show: true, key: 'type', width: 120, sortable: true},
+          {title: '负责人',show: true, key: 'principalName', width: 140, sortable: true},
+          {title: '操作',show: true,
             width: 140,
             align: 'center',
             render: (h, params) => {
@@ -289,8 +293,11 @@
             [{title:'所属行业',id:'industry',type:'select-opts',titlespan:3,colspan:9,relation: '',required:false, select: this.industryList},
               {title:'分类',id:'type',type:'select-opts',titlespan:3,colspan:9,relation: '',required:false, select: this.classifyList}],
             [{title:'BP（万元）',id:'bp',type:'input',titlespan:3,colspan:9,required:false},
-              {title:'负责人',id:'principal',type:'select-opts',titlespan:3,colspan:9,relation: '',required:true, select: this.userList}],
-            [{title:'备注',id:'remark',type:'textarea',titlespan:3,colspan:21,required:false}]],
+              {title:'负责人',id:'principal',type:'select-opts',titlespan:3,colspan:9,relation: '', filterable: true,required:true, select: this.userList}],
+            [{title:'备注',id:'remark',type:'textarea',titlespan:3,colspan:21,required:false}],
+            [{title:'联系人信息',theme: true}],
+            [{title:'姓名',id:'a',type:'input',titlespan:3,colspan:9,required:false},
+              {title:'手机',id:'b',type:'input',titlespan:3,colspan:9,required:false}]],
           button = [{
             type: 'primary',
             title: '确认',
@@ -303,6 +310,7 @@
             break
           case 1:
             title = '修改用户'
+            if(row.propsVal) this._setPropsVal(JSON.parse(row.propsVal))
             break
           case 2:
             title = '新增客户'
@@ -429,7 +437,8 @@
       },
     },
     components: {
-      inputFrom
+      inputFrom,
+      tableColumns
     }
   }
 </script>

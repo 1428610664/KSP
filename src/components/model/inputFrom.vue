@@ -122,7 +122,7 @@
                   </div>
                   <div v-if="rows.type=='checkbox'" style="height: 32px;padding: 5px">
                     <CheckboxGroup v-if="rows.checkboxes" v-model="fromVal[rows.id]">
-                      <Checkbox v-for="item in rows.checkboxes" :label="item.value" :key="item.value"></Checkbox>
+                      <Checkbox v-for="(item, index) in rows.checkboxes" :label="item.value" :key="index">{{item.name}}</Checkbox>
                     </CheckboxGroup>
                     <CheckboxGroup v-else v-model="fromVal[rows.id]">
                       <Checkbox v-for="item in checkboxes[rows.id]" :label="item.value" :key="item.value"></Checkbox>

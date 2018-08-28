@@ -13,6 +13,9 @@ export default {
         enums: '/enums',
         deleteEnums: `/enums/${id}`,
         enumsList: '/enums/queryList',
+        // 菜单管理
+        menus: '/menus',
+        menusList: '/menus/queryList',
         // 联系人管理
         contact: 'contact',
         deleteContact: `/contact/${id}`,
@@ -24,6 +27,7 @@ export default {
         // 用户管理
         users: '/users',
         deleteUser: `/users/${id}`,
+        menusByRoleId: '/users/menusByRoleId',
         // 部门管理
         department: '/department',
         deleteDepartment: `/department/${id}`,
@@ -32,6 +36,7 @@ export default {
         roles: '/roles',
         deleteRoles: `/roles/${id}`,
         rolesList: '/roles',
+        savaMenus: '/roles/savaMenus',
         // 产品管理
         product: '/product',
         deleteProduct: `/product/${id}`,

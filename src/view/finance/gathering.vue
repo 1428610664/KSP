@@ -2,12 +2,12 @@
   <div class="wrapper b wrapper-box">
     <div class="clear">
       <div class="fr c3">
-        <span>营销负责人：</span>
-        <Select v-model="principal" :multiple="true" style="width:240px">
+        <span>负责人：</span>
+        <Select v-model="principal" :multiple="true" :filterable="true" style="width:240px">
           <Option v-for="item in userList" :value="item.value" :key="item.value">{{ item.label }}</Option>
         </Select>
-        <span class="m-l5">所属客户：</span>
-        <Select v-model="requestParam.customerId" style="width:160px">
+        <span class="m-l5">客户名称：</span>
+        <Select v-model="requestParam.customerId" :filterable="true" style="width:160px">
           <Option v-for="item in customerList" :value="item.value" :key="item.value">{{ item.label }}</Option>
         </Select>
         <Input v-model="requestParam.keyWord" placeholder="请输入收款主题..." style="width: 160px" />
@@ -64,8 +64,8 @@
         dataModel: [],
         columnsModel: [],
 
-        userList: [],       // 营销负责人
-        customerList: [],   // 所属客户
+        userList: [],       // 负责人
+        customerList: [],   // 客户名称
         orders: [],         // 订单
         paymentMode: [],    // 收款方式
 
@@ -83,7 +83,7 @@
         columns: [
           // {title: '编号', key: 'id', width: 170, sortable: true},
           {title: '收款主题', key: 'name', width: 160, sortable: true, render: this.tdRender},
-          {title: '所属客户', key: 'customerName', width: 150, sortable: true, render: this.tdRender},
+          {title: '客户名称', key: 'customerName', width: 150, sortable: true, render: this.tdRender},
           {title: '客户联系人', key: 'contactName', width: 140, sortable: true, render: this.tdRender},
           {title: '所属订单', key: 'ordersName', width: 150, sortable: true, render: this.tdRender},
           {title: '收款金额', key: 'price', width: 140, sortable: true},
@@ -199,18 +199,18 @@
         this.dataModel = []
 
         this.inputForm.option = {
-          title: type == 1 ? '修改订单' : '新增订单',
+          title: type == 1 ? '修改收款' : '新增收款',
           width: '768',
           opintions: [
             [{title:'收款主题',id:'name',type:'input',titlespan:4,colspan:20,required:true}],
-            [{title:'所属订单',id:'ordersId',type:'select-opts',titlespan:4,colspan:8,relation: '',required:true, select: this.orders, change: 'orderChange'},
+            [{title:'所属订单',id:'ordersId',type:'select-opts', filterable: true,titlespan:4,colspan:8,relation: '',required:true, select: this.orders, change: 'orderChange'},
               {title:'收款方式',id:'way',type:'select-opts',titlespan:4,colspan:8,relation: '',required:true, select: this.paymentMode}],
             [{title:'收款金额(元)',id:'price',type:'InputNumber',min: 0,titlespan:4,colspan:8,required:true},
               {title:'收款日期',id:'dates',type:'time',titlespan:4,colspan:8,required:true}],
-            [{link: true,linkOpts: [{title:'所属客户',id:'customerId',type:'select-opts',titlespan:4,colspan:8,required:true,disabled: type == 0, url: 'customerList'},
+            [{link: true,linkOpts: [{title:'客户名称',id:'customerId',type:'select-opts',titlespan:4,colspan:8,required:true,disabled: type == 0, url: 'customerList'},
                 {title:'客户联系人',id:'contactId',type:'select-opts',titlespan:4,colspan:8,required:true,disabled: type == 0, url: 'contactList',parmsId: 'customerId'}]}],
             [{title:'毛利(元)',id:'gm',type:'InputNumber',min: 0,titlespan:4,colspan:8,relation: '',required:false},
-              {title:'负责人',id:'principal',type:'select-opts',titlespan:4,colspan:8,relation: '',required:true, select: this.userList}],
+              {title:'负责人',id:'principal',type:'select-opts', filterable: true,titlespan:4,colspan:8,relation: '',required:true, select: this.userList}],
             [{title:'备注',id:'remark',type:'textarea',titlespan:4,colspan:20,required:false}]],
           button: [{
             type: 'primary',

@@ -2,12 +2,12 @@
   <div class="m-10 b wrapper-box">
     <div class="clear">
       <div class="fr c3">
-        <span>营销负责人：</span>
-        <Select v-model="principal" :multiple="true" style="width:240px">
+        <span>负责人：</span>
+        <Select v-model="principal" :multiple="true" :filterable="true" style="width:240px">
           <Option v-for="item in userList" :value="item.value" :key="item.value">{{ item.label }}</Option>
         </Select>
-        <span class="m-l5">所属客户：</span>
-        <Select v-model="requestParam.customerId" style="width:160px">
+        <span class="m-l5">客户名称：</span>
+        <Select v-model="requestParam.customerId" :filterable="true" style="width:160px">
           <Option v-for="item in customerList" :value="item.value" :key="item.value">{{ item.label }}</Option>
         </Select>
         <Input v-model="requestParam.keyWord" placeholder="请输入活动主题..." style="width: 160px" />
@@ -18,10 +18,11 @@
       <Button type="primary" @click="addUserEvent(null, 2)">新增</Button>
       <!--<Button type="primary">导入</Button>-->
       <span class="" style="line-height: 30px">实际费用汇总（元）：<span class="c1 fz14">{{priceActual}}</span></span>
+      <table-columns class="fr" :columns="columns" @change="columnsChange"></table-columns>
     </div>
 
     <!--table列表-->
-    <i-table class="m-t10" :columns="columns" :data="data" border size="small" ref="table"></i-table>
+    <i-table class="m-t10" :columns="changeColumns" :data="data" border size="small" ref="table"></i-table>
     <!--分页-->
     <div style="text-align: right; padding-top: 5px;">
       <Page show-total show-sizer show-elevator style="display: inline-block;" placement="top"
@@ -66,6 +67,7 @@
 <script>
 
   import inputFrom from 'components/model/inputFrom.vue'
+  import tableColumns from 'components/table-columns'
   import {mapGetters} from 'vuex'
   import { propsMixin } from 'mixins/propsMixin'
 
@@ -85,8 +87,8 @@
           value: {}
         },
 
-        userList: [],       // 营销负责人
-        customerList: [],   // 所属客户
+        userList: [],       // 负责人
+        customerList: [],   // 客户名称
         activityMode: [],   // 活动方式
         business: [],       // 所属商机
 
@@ -103,30 +105,30 @@
 
         columns: [
           // {title: '编号', key: 'id', width: 170, sortable: true},
-          {title: '活动状态', width: 120, sortable: true, render: (h, params) => {
+          {title: '活动状态',show: true, width: 120, sortable: true, render: (h, params) => {
               return h('div', [
                 h('span', this.getActiveStatus(params.row.status ))
               ])
             }},
-          {title: '活动主题', key: 'name', width: 160, sortable: true, render: this.tdRender},
-          {title: '所属客户', key: 'customerName', width: 140, sortable: true, render: this.tdRender},
-          {title: '客户联系人', key: 'contactName', width: 140, sortable: true, render: this.tdRender},
-          {title: '所属商机', key: 'businessName', width: 160, sortable: true, render: this.tdRender},
-          {title: '活动方式', key: 'way', width: 120, sortable: true, render: this.tdRender},
-          {title: '计划开始时间', width: 170, sortable: true, render: (h, params) => {
+          {title: '活动主题',show: true, key: 'name', width: 160, sortable: true, render: this.tdRender},
+          {title: '客户名称',show: true, key: 'customerName', width: 140, sortable: true, render: this.tdRender},
+          {title: '客户联系人',show: true, key: 'contactName', width: 140, sortable: true, render: this.tdRender},
+          {title: '所属商机',show: true, key: 'businessName', width: 160, sortable: true, render: this.tdRender},
+          {title: '活动方式',show: true, key: 'way', width: 120, sortable: true, render: this.tdRender},
+          {title: '计划开始时间',show: true, width: 170, sortable: true, render: (h, params) => {
               return h('div', [
                 h('span', params.row.btPlan ? new Date(params.row.btPlan.time).format('yyyy-MM-dd hh:mm:ss') : '')
               ])
             }},
-          {title: '实际开始时间', width: 170, sortable: true, render: (h, params) => {
+          {title: '实际开始时间',show: true, width: 170, sortable: true, render: (h, params) => {
               return h('div', [
                 h('span', params.row.btPlan ? new Date(params.row.etPlan.time).format('yyyy-MM-dd hh:mm:ss') : '')
               ])
             }},
-          {title: '预计费用', key: 'pricePlan', width: 120, sortable: true, render: this.tdRender},
-          {title: '实际费用', key: 'priceActual', width: 120, sortable: true, render: this.tdRender},
-          {title: '负责人', key: 'principalName', width: 140, sortable: true, render: this.tdRender},
-          {title: '操作',
+          {title: '预计费用',show: true, key: 'pricePlan', width: 120, sortable: true, render: this.tdRender},
+          {title: '实际费用',show: true, key: 'priceActual', width: 120, sortable: true, render: this.tdRender},
+          {title: '负责人',show: true, key: 'principalName', width: 140, sortable: true, render: this.tdRender},
+          {title: '操作',show: true,
             width: 220,
             align: 'center',
             render: (h, params) => {
@@ -244,10 +246,11 @@
         this.inputForm.show = true
         this.inputForm.modalDisabled = false
         this.type = type
+        this._clearPropsFromVal()
 
         let opintions = [
           [{title:'活动主题',id:'name',type:'input',titlespan:4,colspan:20,required:true,readonly: type == 0}],
-            [{link: true,linkOpts: [{title:'所属客户',id:'customerId',type:'select-opts',titlespan:4,colspan:8,required:true,disabled: type == 0, url: 'customerList'},
+            [{link: true,linkOpts: [{title:'客户名称',id:'customerId',type:'select-opts', filterable: true,titlespan:4,colspan:8,required:true,disabled: type == 0, url: 'customerList'},
                 {title:'客户联系人',id:'contactId',type:'select-opts',titlespan:4,colspan:8,required:true,disabled: type == 0, url: 'contactList',parmsId: 'customerId'}]}],
           [{title:'所属商机',id:'businessId',type:'select-opts',titlespan:4,colspan:8,relation: '',required:false,disabled: type == 0, select: this.business},
             {title:'活动方式',id:'way',type:'select-opts',titlespan:4,colspan:8,relation: '',required:true,disabled: type == 0, select: this.activityMode}],
@@ -257,7 +260,7 @@
             {title:'费用说明',id:'priceDescPlan',type:'input',titlespan:4,colspan:8,required:false,readonly: type == 0}],
           [{title:'计划描述',id:'descsPlan',type:'textarea',titlespan:4,colspan:20,required:false,readonly: type == 0}],
           [{title:'销售支持',id:'sales',type:'input',titlespan:4,colspan:8,relation: '',required:false,readonly: type == 0},
-            {title:'负责人',id:'principal',type:'select-opts',titlespan:4,colspan:8,relation: '',required:true,disabled: type == 0, select: this.userList}]],
+            {title:'负责人',id:'principal',type:'select-opts',titlespan:4,colspan:8,relation: '', filterable: true,required:true,disabled: type == 0, select: this.userList}]],
           value = {
             name: row ? row.name : '',
             customerId: row ? row.customerId : '',
@@ -276,8 +279,8 @@
         if(type == 0) {
           opintions = opintions.concat([
             [{title:'活动结果',theme: true}],
-            [{title:'计划开始时间',id:'btActual',maxDate: 'etActual', minDate: '',type:'time',titlespan:4,colspan:8,required:true},
-              {title:'计划结束时间',id:'etActual',maxDate: '', minDate: 'btActual',type:'time',titlespan:4,colspan:8,required:true}],
+            [{title:'实际开始时间',id:'btActual',maxDate: 'etActual', minDate: '',type:'time',titlespan:4,colspan:8,required:true},
+              {title:'实际结束时间',id:'etActual',maxDate: '', minDate: 'btActual',type:'time',titlespan:4,colspan:8,required:true}],
             [{title:'实际费用',id:'priceActual',type:'InputNumber',min: 0,titlespan:4,colspan:8,required:false},
               {title:'费用说明',id:'priceDescActual',type:'input',titlespan:4,colspan:8,required:false}],
             [{title:'结果描述',id:'descsResult',type:'textarea',titlespan:4,colspan:20,required:true}],
@@ -303,6 +306,7 @@
         }
         this.inputForm.value = value
         if(type == 0 || type == 1) {
+          if(row.propsVal) this._setPropsVal(JSON.parse(row.propsVal))
           this.inputForm.value.id = row.id
         }
       },
@@ -331,7 +335,8 @@
       }
     },
     components: {
-      inputFrom
+      inputFrom,
+      tableColumns
     }
   }
 </script>

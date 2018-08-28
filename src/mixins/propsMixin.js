@@ -5,6 +5,8 @@ export const propsMixin = {
       propsList: [],       // 自定义字段
       propsOpintions: [],  // 自定义字段配置
       propsFromVal: {},    // 自定义字段值
+
+      changeColumns: [],
     }
   },
   methods: {
@@ -12,6 +14,8 @@ export const propsMixin = {
       this.requestAjax('get', 'props', {model: this.propsKey}).then(res => {
         if(res.success) {
           this.propsList = res.data.rows
+          this._parseCustomProps(res.data.rows)
+          // this.columns = this.columns.concat(this._parseCustomProps(res.data.rows))
           this.propsOpintions.push(this.addPropsInputs(this.propsList))
           this.propsFromVal = this.addPropsIds(this.propsList)
         }
@@ -36,7 +40,38 @@ export const propsMixin = {
       for (let k in this.propsFromVal){
         this.propsFromVal[k] = ''
       }
-    }
+    },
+    _setPropsVal(data){
+      for(let k in data){
+        this.propsFromVal[k] = data[k]
+      }
+    },
+    _parseCustomProps(data){
+      let arr = []
+      data.forEach(item => {
+        this.columns.splice(this.columns.length-1, 0, {title: '#'+item.nameCn, show: false, key: item.nameEn, width: 150, sortable: true, render: (h, params) => {
+          let propsVal = null
+          if(params.row.propsVal) {
+            propsVal = JSON.parse(params.row.propsVal)
+          }
+          return h('div', [
+            h('span', propsVal ? propsVal[item.nameEn] : '')
+          ])
+        }})
+      })
+      return arr
+    },
+
+    columnsChange (val) {
+      for (let key in this.columns) {
+        this.columns[key].show = false
+      }
+      this.changeColumns = []
+      for (let key of val) {
+        this.columns[key].show = true
+        this.changeColumns.push(Object.assign({}, this.columns[key]))
+      }
+    },
   }
 
 }

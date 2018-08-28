@@ -2,12 +2,12 @@
   <div class="wrapper b wrapper-box">
     <div class="clear">
       <div class="fr c3">
-        <span>销售负责人：</span>
-        <Select v-model="principal" :multiple="true" style="width:240px">
+        <span>负责人：</span>
+        <Select v-model="principal" :multiple="true" :filterable="true" style="width:240px">
           <Option v-for="item in userList" :value="item.value" :key="item.value">{{ item.label }}</Option>
         </Select>
-        <span class="m-l5">所属客户：</span>
-        <Select v-model="requestParam.customerId" style="width:160px">
+        <span class="m-l5">客户名称：</span>
+        <Select v-model="requestParam.customerId" :filterable="true" style="width:160px">
           <Option v-for="item in customerList" :value="item.value" :key="item.value">{{ item.label }}</Option>
         </Select>
         <Input v-model="requestParam.keyWord" placeholder="请输入订单主题..." style="width: 160px" />
@@ -231,8 +231,8 @@
           }
         ],
 
-        userList: [],       // 营销负责人
-        customerList: [],   // 所属客户
+        userList: [],       // 负责人
+        customerList: [],   // 客户名称
         business: [],       // 所属商机
         products: [],       // 产品列表
 
@@ -250,16 +250,16 @@
         columns: [
           // {title: '编号', key: 'id', width: 170, sortable: true},
           {title: '订单主题', key: 'name', width: 160, sortable: true, render: this.tdRender},
-          {title: '所属客户', key: 'customerName', width: 150, sortable: true, render: this.tdRender},
-          {title: '客户联系人', key: 'contactName', width: 150, sortable: true, render: this.tdRender},
-          {title: '成交金额', key: 'price', width: 140, sortable: true},
+          {title: '客户名称', key: 'customerName', sortable: true, render: this.tdRender},
+          {title: '客户联系人', key: 'contactName', sortable: true, render: this.tdRender},
+          {title: '成交金额', key: 'price', sortable: true},
           {title: '签约日期', width: 160, sortable: true, render: (h, params) => {
               return h('div', [
                 h('span', params.row.signTime ? new Date(params.row.signTime.time).format('yyyy-MM-dd hh:mm:ss') : '')
               ])
             }},
-          {title: '所属商机', key: 'businessName', width: 180, sortable: true, render: this.tdRender},
-          {title: '负责人', key: 'principalName', width: 150, sortable: true, render: this.tdRender},
+          {title: '所属商机', key: 'businessName', sortable: true, render: this.tdRender},
+          {title: '负责人', key: 'principalName', sortable: true, render: this.tdRender},
           {title: '操作',
             width: 140,
             align: 'center',
@@ -369,12 +369,12 @@
           width: '768',
           opintions: [
             [{title:'订单主题',id:'name',type:'input',titlespan:4,colspan:20,required:true}],
-            [{link: true,linkOpts: [{title:'所属客户',id:'customerId',type:'select-opts',titlespan:4,colspan:8,required:true, url: 'customerList'},
+            [{link: true,linkOpts: [{title:'客户名称',id:'customerId',type:'select-opts', filterable: true,titlespan:4,colspan:8,required:true, url: 'customerList'},
                 {title:'客户联系人',id: 'contactId',type:'select-opts',titlespan:4,colspan:8,required:true, url: 'contactList',parmsId: 'customerId'}]}],
             [{title:'成交金额(元)',id:'price',type:'InputNumber',min: 0,titlespan:4,colspan:8,required:true},
               {title:'签约日期',id:'signTime',type:'time',titlespan:4,colspan:8,required:true}],
             [{title:'所属商机',id:'businessId',type:'select-opts',titlespan:4,colspan:8,relation: '',required:true, select: this.business},
-              {title:'负责人',id:'principal',type:'select-opts',titlespan:4,colspan:8,relation: '',required:true, select: this.userList}],
+              {title:'负责人',id:'principal',type:'select-opts', filterable: true,titlespan:4,colspan:8,relation: '',required:true, select: this.userList}],
             [{title:'备注',id:'remark',type:'textarea',titlespan:4,colspan:20,required:false}]],
           button: [{
             type: 'primary',

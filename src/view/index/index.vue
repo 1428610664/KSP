@@ -39,7 +39,9 @@
       <div class="footer c3 fz12 ct">Copyright ©广州科微</div>
     </div>
     <div class="app-content">
-      <router-view></router-view>
+      <transition name="fade-transform" mode="out-in">
+        <router-view></router-view>
+      </transition>
     </div>
 
     <input-from v-if="inputForm.show" @changeOptions="getInputVal" :options="inputForm.option" :value="inputForm.value" :modalDisabled="inputForm.modalDisabled"
@@ -57,6 +59,7 @@
     data() {
       return {
         type: 0,
+        permissionUrls: [],
         inputForm: {
           show: false,
           modalDisabled: false,
@@ -65,9 +68,9 @@
           value: {}
         },
         activeNenu: this.$route.path,
-        loadMian: [
+        loadMian: [/*
           {path: '0', title:  '统计分析',children:[
-              {path: '/test', title:  '季度报表'}
+              {path: '/quarter', title:  '季度报表'}
             ]},
           {path: '1', title:  '客户管理',children:[
               {path: '/customerManage', title:  '客户管理'},
@@ -91,11 +94,11 @@
             ]},
           {path: '6', title:  '权限管理',children:[
               {path: '/userManage', title:  '用户管理'},
-              {path: '/test',title:  '组织结构'},
+              {path: '/organizationStructure',title:  '组织结构'},
               {path: '/roleManage',title:  '角色管理'},
-              {path: '/test',title:  '用户权限'}
+              {path: '/userPermission',title:  '用户权限'}
             ]}
-        ],
+        */],
       }
     },
     computed: {
@@ -103,10 +106,74 @@
         'userData'
       ])
     },
+    watch: {
+      $route (to, from) {
+        let roterName = this.$route.path.split('/')[1]
+        if(this.permissionUrls.indexOf(roterName) == -1) {
+          this.$router.replace({path:"/index"})
+        }
+      }
+    },
+    beforeCreate(){
+      this.$nextTick(() => {
+        if(this.userData) this.requestMenusByRoleId(this.userData.user.role)
+      })
+    },
+
     methods: {
       ...mapActions([
         'logoutAction',
       ]),
+      requestMenusByRoleId(id){
+        this.requestAjax('get', 'menusByRoleId', {roleId: id}).then(res => {
+          if(res.success) {
+            this.loadMian = this._parseMenus(res.data.rows)
+            this.$nextTick(() => {
+              this.initScroll(document.querySelectorAll('.menu-wrapper'))
+              this.$refs.refName.updateActiveName()
+              let roterName = this.$route.path.split('/')[1]
+              if(this.permissionUrls.indexOf(roterName) == -1) {
+                this.$router.replace({path:"/index"})
+              }
+            })
+          }else{
+            this.$Message.warning('加载失败')
+          }
+        })
+      },
+      _parseMenus(data){
+        let menusList = [],menus = [],urls = []
+        data.forEach(item => {
+          if(item.parentId == '-'){
+            let _i = this._findIndex(menusList, item.id)
+            if( _i == -1) {
+              menusList.push({path: item.id, title: item.name, children: []})
+            }else{
+              menusList[_i].title = item.name
+            }
+          }else{
+            if(item.selected === 'true'){
+              let _i = this._findIndex(menusList, item.parentId)
+              if( _i == -1) {
+                menusList.push({path: item.parentId, title: item.name, children: [{path: item.url, title: item.name}]})
+              }else{
+                menusList[_i].children.push({path: item.url, title: item.name})
+              }
+              urls.push(item.url)
+            }
+          }
+        })
+        this.permissionUrls = urls.join(',')
+        menusList.forEach(item => {
+          if(item.children.length> 0) menus.push(item)
+        })
+        return menus
+      },
+      _findIndex(data, id){
+        return data.findIndex(item => {
+          return item.path == id
+        })
+      },
       changeMenu (name) {
         this.routePush(name)
       },

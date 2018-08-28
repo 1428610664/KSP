@@ -9,7 +9,7 @@
     </div>
 
     <!--table列表-->
-    <i-table class="m-t10" :columns="columns" :data="data" border size="small" ref="table" @on-row-dblclick="rowDbClick"></i-table>
+    <i-table class="m-t10" :columns="columns" :data="data" border size="small" ref="table"></i-table>
     <!--分页-->
     <div style="text-align: right; padding-top: 5px;">
       <Page show-total show-sizer show-elevator style="display: inline-block;" placement="top"
@@ -42,6 +42,9 @@
           option: {},
           value: {}
         },
+
+        menusList: [],    // 菜单集合
+        pIds: {},         // 父级菜单ID集合
 
         requestParam: {
           keyWord: '',
@@ -99,7 +102,7 @@
                   props: {type: 'success', size: 'small'},
                   nativeOn: {
                     click: () => {
-                      this.addUserEvent(params.row, 0)
+                      this.requestMenusByRoleId(params.row)
                     }
                   }
                 }, '角色资源')
@@ -112,6 +115,7 @@
     created() {
       setTimeout(() => {
         this.requestData()
+        this.requestMenus()
       }, 20)
     },
     methods: {
@@ -120,27 +124,13 @@
         this.requestParam.offset = 1
         this.requestData()
       },
-      /**
-       *跳页
-       * @param v
-       */
       changePage (v) {
         this.requestParam.offset = v
         this.requestData()
       },
-      /**
-       *改变页面展示用户条数
-       * @param v
-       */
       changeSize (v) {
         this.requestParam.limit = v
         this.requestData()
-      },
-      /**
-       *双击表格列时触发
-       */
-      rowDbClick (row) {
-        this.$Message.success('双击')
       },
       requestData() {
         this.requestAjax('get', 'rolesList', this.requestParam).then(res => {
@@ -161,9 +151,9 @@
           [{title:'状态',id:'status',type:'radio',titlespan:4,colspan:20,required:true}]]
         if(type == 0) {
           opintions = [
-            [{title:'角色名称',id:'name',type:'input',titlespan:4,colspan:20,required:true,readonly: true}],
-            [{title:'xx主菜单',id:'menu',type:'checkbox',titlespan:4,colspan:20,required:true, checkboxes: [{value: '子菜单1', name: '1'},{value: '子菜单2', name: '2'},{value: '子菜单3', name: '3'}]}]
+            [{title:'角色名称',id:'name',type:'input',titlespan:4,colspan:20,required:true,readonly: true}]
           ]
+          opintions = opintions.concat(this._parseOptions(this.menusList))
         }
 
         this.inputForm.option = {
@@ -178,47 +168,45 @@
         }
         if(type == 0) {
           this.inputForm.value = {
-            name: row ? row.name : '',
-            menu: []
+            name: row ? row.name : ''
           }
+          this.inputForm.value = Object.assign({},this.inputForm.value, this.pIds)
         }else {
           this.inputForm.value = {
             name: row ? row.name : '',
             status: row ? row.status+'' : ''
           }
         }
-        if(type == 1) {
+        if(type == 0 || type == 1) {
           this.inputForm.value.id = row.id
         }
       },
-      /**
-       *提交返回处理方法
-       * @param val
-       * @param type
-       */
       getInputVal (val, type) {
-        this.inputForm.value = val // 表单填写的内容;
-        if (type === 'cancel') { // 按钮操作
-          this.inputForm.modalshow = false // 隐藏modal
+        this.inputForm.value = val
+        if (type === 'cancel') {
+          this.inputForm.modalshow = false
           return
         }
         let newVal = {}
         Object.assign(newVal, val)
+        delete newVal.name
         if(this.type == 0) { // 角色资源
-
+          let parms = {id : newVal.id}, menuIds = []
+          for(let k in newVal){
+            if(k != 'id') menuIds = menuIds.concat(newVal[k])
+          }
+          parms.menuIds = menuIds.join(',')
+          this.upSavaMenus(parms)
         }else { // 修改、新增角色
           this.updateRoles(newVal)
         }
       },
       updateRoles(data) {
         this.requestAjax('post', 'roles', data).then(res => {
+          this.$Message[res.success ? 'success' : 'warning'](res.desc)
           if(res.success) {
             this.requestData()
             this.inputForm.modalshow = false
-            this.$Message.success(res.desc)
-          }else {
-            this.$Message.warning(res.desc)
-            this.inputForm.modalshow = true
           }
         }, error => {
           this.$Message.warning('操作失败')
@@ -231,6 +219,92 @@
           if(res.success)
             this.requestData()
         })
+      },
+      requestMenus() {
+        this.requestAjax('get', 'menusList', {}).then(res => {
+          if(res.success) {
+            let menus = this._parseMenus(res.data.rows)
+            this.menusList = menus.menusList
+            this.pIds = menus.pIds
+          }
+        })
+      },
+      upSavaMenus(data){
+        this.requestAjax('post', 'savaMenus', data).then(res => {
+          this.$Message[res.success ? 'success' : 'warning'](res.desc)
+          if(res.success){
+            this.inputForm.modalshow = false
+            this.requestData()
+          }
+        })
+      },
+
+      requestMenusByRoleId(row){
+        const loading = this.$Message.loading({content: '加载中...',duration: 0})
+        this.requestAjax('get', 'menusByRoleId', {roleId: row.id}).then(res => {
+          if(res.success) {
+            setTimeout(() => {
+              loading()
+              this.pIds = this._parseMenusIds(res.data.rows)
+              this.addUserEvent(row, 0)
+            }, 200)
+          }else{
+            loading()
+            this.$Message.warning('加载失败')
+          }
+        }, () => {
+          loading()
+        })
+      },
+
+      _parseMenus(data){
+        let menusList = [], pIds = {}
+        data.forEach(item => {
+          if(item.parentId == '-'){
+            let _i = this._findIndex(menusList, item.id)
+            if( _i == -1) {
+              menusList.push({value: item.id, lable: item.name, childer: []})
+            }else{
+              menusList[_i].lable = item.name
+            }
+            pIds[item.id] = []
+          }else{
+            let _i = this._findIndex(menusList, item.parentId)
+            if( _i == -1) {
+              menusList.push({value: item.parentId, lable: item.name, childer: [{value: item.id, name: item.name}]})
+            }else{
+              menusList[_i].childer.push({value: item.id, name: item.name})
+            }
+          }
+        })
+        return {pIds, menusList}
+      },
+      _parseMenusIds(data){
+        let pIds = {}
+        data.forEach(item => {
+          if(item.parentId == '-'){
+            pIds[item.id] = []
+          }else{
+            if(pIds[item.parentId]) {
+              if(item.selected == 'true') pIds[item.parentId].push(item.id)
+            }else{
+              if(item.selected == 'true') pIds[item.parentId] = [item.id]
+            }
+          }
+        })
+        return pIds
+      },
+      _findIndex(data, id){
+        return data.findIndex(item => {
+          return item.value == id
+        })
+      },
+      _parseOptions(data){
+        let options = []
+        data.forEach(item => {
+          options.push([{title: item.lable,id: item.value,type:'checkbox',titlespan:4,colspan:20,required: false, checkboxes: item.childer}])
+        })
+        return options
       }
     },
     components: {
