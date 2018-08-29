@@ -228,7 +228,7 @@
         let opintions = [
             [{title:'姓名',id:'name',type:'input',titlespan:3,colspan:9,required:true},
               {title:'性别',id:'sex',type:'select',titlespan:3,colspan:9,required:false}],
-          [{link: true,linkOpts: [{title:'客户名称',id:'customerId',type:'select-opts', filterable: true,titlespan:3,colspan:9,required:true, url: 'customerList'},
+          [{link: true,linkOpts: [{title:'客户名称',id:'customerId',type:'select-opts', titlespan:3,colspan:9,required:true, url: 'customerList'},
               {title:'上级联系人',id: 'superiors',type:'select-opts',titlespan:3,colspan:9,required: false, url: 'contactList',parmsId: 'customerId'}]}],
             [{title:'部门',id:'departmentId',type:'select-opts',titlespan:3,colspan:9,relation: '',required:false, select: this.departmentList},
               {title:'职位',id:'officer',type:'input',titlespan:3,colspan:9,required:false}],
@@ -239,7 +239,7 @@
             [{title:'Email',id:'email',type:'input',titlespan:3,colspan:9,required:false},
               {title:'QQ',id:'qq',type:'input',titlespan:3,colspan:9,required:false}],
             [{title:'籍贯',id:'hometown',type:'input',titlespan:3,colspan:9,required:false},
-              {title:'负责人',id:'principal',type:'select-opts',titlespan:3,colspan:9, filterable: true,relation: '',required:false, select: this.userList}],
+              {title:'负责人',id:'principal',type:'select-opts',titlespan:3,colspan:9, relation: '',required:false, select: this.userList}],
             [{title:'备注',id:'remark',type:'textarea',titlespan:3,colspan:21,required:false}]]
 
         this.inputForm.option = {

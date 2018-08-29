@@ -169,7 +169,7 @@
           width = '768',
           button = [{
             type: 'primary',
-            title: '修改',
+            title: '确认',
             click: 'handle'
           }],
           opintions = [

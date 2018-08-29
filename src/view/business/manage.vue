@@ -185,7 +185,7 @@
         })
       },
       requestData() {
-        this.requestAjax('get', 'businessList', this.requestParam).then(res => {
+        this.requestAjax('get', 'business', this.requestParam).then(res => {
           if(res.success) {
             this.price = res.data.price
             this.data = res.data.rows
@@ -219,14 +219,14 @@
           width: '768',
           opintions: [
             [{title:'商机主题',id:'name',type:'input',titlespan:4,colspan:20,required:true}],
-            [{link: true,linkOpts: [{title:'客户名称',id:'customerId',type:'select-opts', filterable: true,titlespan:4,colspan:8,required:true, url: 'customerList'},
+            [{link: true,linkOpts: [{title:'客户名称',id:'customerId',type:'select-opts', titlespan:4,colspan:8,required:true, url: 'customerList'},
                 {title:'客户联系人',id: 'contact',type:'select-opts',titlespan:4,colspan:8,required:true, url: 'contactList',parmsId: 'customerId'}]}],
             [{title:'跟踪金额(元)',id:'price',type:'InputNumber',min: 0,titlespan:4,colspan:8,required:true},
               {title:'赢率',id:'winRate',type:'select-opts',titlespan:4,colspan:8,relation: '',required:true, select: this.winRate}],
             [{title:'产品',id:'product',type:'select-opts',titlespan:4,colspan:8,relation: '',required:true, select: this.productList},
               {title:'预计下单日期',id:'orderDate',type:'time',format: 'yyyy-MM-dd',titlespan:4,colspan:8,required:true}],
             [{title:'客户需求描述',id:'descs',type:'textarea',titlespan:4,colspan:20,required:false}],
-            [{title:'负责人',id:'principal',type:'select-opts',titlespan:4,colspan:20, filterable: true,relation: '',required:true, select: this.userList}],
+            [{title:'负责人',id:'principal',type:'select-opts',titlespan:4,colspan:20,relation: '',required:true, select: this.userList}],
             [{title:'备注',id:'remark',type:'textarea',titlespan:4,colspan:20,required:false}]],
           button: [{
             type: 'primary',
@@ -238,7 +238,7 @@
           name: row ? row.name : '',
           customerId: row ? row.customerId : '',
           contact: row ? type == 1 ? row.contactId: row.contact : '',
-          price: row ? row.price : '',
+          price: row ? row.price : 0,
           winRate: row ? row.winRate : '10%',
           product: row ? row.product : '',
           orderDate: row ? row.orderDate : '',

@@ -5,12 +5,16 @@
         <Select v-model="requestParam.year" style="width:120px">
           <Option v-for="item in yearList" :value="item.value" :key="item.value">{{ item.label }}</Option>
         </Select>
-        <Select v-model="requestParam.quarter" style="width:120px" class="m-r5">
+        <Select v-model="requestParam.quarter" style="width:80px" class="m-r5">
           <Option v-for="item in quarterList" :value="item.value" :key="item.value">{{ item.label }}</Option>
         </Select>
         <span>选择部门：</span>
         <Select v-model="department" :multiple="true" :filterable="true" style="width:160px" class="m-r5">
           <Option v-for="item in departments" :value="item.value" :key="item.value">{{ item.label }}</Option>
+        </Select>
+        <span>负责人：</span>
+        <Select v-model="principal" :multiple="true" :filterable="true" style="width:160px" class="m-r5">
+          <Option v-for="item in userList" :value="item.value" :key="item.value">{{ item.label }}</Option>
         </Select>
         <span>选择产品线：</span>
         <Select v-model="product" :multiple="true" :filterable="true" style="width:160px">
@@ -66,9 +70,11 @@
     name: "index",
     data() {
       return {
+        principal: [],
         department: [],
         product: [],
         requestParam: {
+          principal: '',
           year: '2018',
           quarter: 'Q1',
           department: '',
@@ -81,6 +87,7 @@
 
         departments: [],  // 部门
         products: [],     // 产品
+        userList: [],     // 负责人
 
         t1Data: [
           {name: '收款', start_RAD_BP: 1,end_RAD_BP: 2},
@@ -273,16 +280,18 @@
         this.requestParam.offset = 1
         this.requestParam.department = this.department.join(',')
         this.requestParam.product = this.product.join(',')
+        this.requestParam.principal = this.principal.join(',')
         this.requestData()
       },
       requestData(){
 
       },
       requestCommons(){
-        this.requestCommon({queryDepartment: true,queryProduct: true}, (res)=> {
+        this.requestCommon({queryDepartment: true,queryUsers: true,queryProduct: true}, (res)=> {
           if(res.success) {
             this.departments = res.data.departments
             this.products = res.data.products
+            this.userList= res.data.users
           }
         })
       },

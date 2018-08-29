@@ -33,7 +33,7 @@
             @on-page-size-change="changeSize"></Page>
     </div>
 
-    <input-from v-if="inputForm.show" @changeOptions="getInputVal" :options="inputForm.option" :value="inputForm.value" :modalDisabled="inputForm.modalDisabled"
+    <input-from v-if="inputForm.show" @changeOptions="getInputVal" @customerChange="customerChange" :options="inputForm.option" :value="inputForm.value" :modalDisabled="inputForm.modalDisabled"
                 :modalshow="inputForm.modalshow">
       <template slot="custom">
         <div v-for="(row ,index) in propsOpintions" :key="index" class="customForm">
@@ -91,6 +91,7 @@
         customerList: [],   // 客户名称
         activityMode: [],   // 活动方式
         business: [],       // 所属商机
+        business2: [],      // 弹窗所属商机
 
         principal: [],
         requestParam: {
@@ -218,7 +219,7 @@
         })
       },
       requestData() {
-        this.requestAjax('get', 'activityList', this.requestParam).then(res => {
+        this.requestAjax('get', 'activity', this.requestParam).then(res => {
           if(res.success) {
             this.priceActual = res.data.priceActual
             this.data = res.data.rows
@@ -250,7 +251,7 @@
 
         let opintions = [
           [{title:'活动主题',id:'name',type:'input',titlespan:4,colspan:20,required:true,readonly: type == 0}],
-            [{link: true,linkOpts: [{title:'客户名称',id:'customerId',type:'select-opts', filterable: true,titlespan:4,colspan:8,required:true,disabled: type == 0, url: 'customerList'},
+            [{link: true,linkOpts: [{title:'客户名称',id:'customerId',type:'select-opts', titlespan:4,colspan:8,required:true, change: 'customerChange',disabled: type == 0, url: 'customerList'},
                 {title:'客户联系人',id:'contactId',type:'select-opts',titlespan:4,colspan:8,required:true,disabled: type == 0, url: 'contactList',parmsId: 'customerId'}]}],
           [{title:'所属商机',id:'businessId',type:'select-opts',titlespan:4,colspan:8,relation: '',required:false,disabled: type == 0, select: this.business},
             {title:'活动方式',id:'way',type:'select-opts',titlespan:4,colspan:8,relation: '',required:true,disabled: type == 0, select: this.activityMode}],
@@ -260,7 +261,7 @@
             {title:'费用说明',id:'priceDescPlan',type:'input',titlespan:4,colspan:8,required:false,readonly: type == 0}],
           [{title:'计划描述',id:'descsPlan',type:'textarea',titlespan:4,colspan:20,required:false,readonly: type == 0}],
           [{title:'销售支持',id:'sales',type:'input',titlespan:4,colspan:8,relation: '',required:false,readonly: type == 0},
-            {title:'负责人',id:'principal',type:'select-opts',titlespan:4,colspan:8,relation: '', filterable: true,required:true,disabled: type == 0, select: this.userList}]],
+            {title:'负责人',id:'principal',type:'select-opts',titlespan:4,colspan:8,relation: '', required:true,disabled: type == 0, select: this.userList}]],
           value = {
             name: row ? row.name : '',
             customerId: row ? row.customerId : '',
@@ -269,7 +270,7 @@
             way: row ? row.way : '',
             btPlan: row && row.btPlan ? new Date(row.btPlan.time).format('yyyy-MM-dd hh:mm:ss') : '',
             etPlan: row && row.etPlan ? new Date(row.etPlan.time).format('yyyy-MM-dd hh:mm:ss') : '',
-            pricePlan: row ? row.pricePlan : '',
+            pricePlan: row ? row.pricePlan : 0,
             priceDescPlan: row ? row.priceDescPlan : '',
             descsPlan: row ? row.descsPlan : '',
             sales: row ? row.sales : '',
@@ -307,6 +308,7 @@
         this.inputForm.value = value
         if(type == 0 || type == 1) {
           if(row.propsVal) this._setPropsVal(JSON.parse(row.propsVal))
+          // if(value.customerId) this.customerChange(value.customerId)
           this.inputForm.value.id = row.id
         }
       },
@@ -332,6 +334,23 @@
           }
           this.updateActivity(newVal)
         }
+      },
+      customerChange(id){
+        /*if(!id) return
+        this.requestAjax('get', 'businessList', {customerId: id}).then(res => {
+          let _i = this._findIndex('businessId')
+          this.inputForm.option.opintions[_i][0].select = this._parseSelectData(res.data.rows)
+        })*/
+      },
+      _findIndex(id){
+        let opintions = this.inputForm.option.opintions
+        return opintions.findIndex(item => {
+          let mark = false
+          item.forEach(d => {
+            if(d.id == id) mark = true
+          })
+          return mark
+        })
       }
     },
     components: {

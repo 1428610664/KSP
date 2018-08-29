@@ -134,7 +134,7 @@
         this.requestData()
       },
       requestData() {
-        this.requestAjax('get', 'productList', this.requestParam).then(res => {
+        this.requestAjax('get', 'product', this.requestParam).then(res => {
           if(res.success) {
             this.data = res.data.rows
             this.total = res.data.rows.length
@@ -263,8 +263,8 @@
             name: row ? row.name : '',
             numbers: row ? row.numbers : '',
             classify: row ? row.classify : '',
-            price: row ? row.price : '',
-            gm: row ? row.gm : '',
+            price: row ? row.price : 0,
+            gm: row ? row.gm : 0,
             remark: row ? row.remark : ''
           }
           if(type == 1) {

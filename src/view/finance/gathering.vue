@@ -168,7 +168,7 @@
         })
       },
       requestData() {
-        this.requestAjax('get', 'receiptList', this.requestParam).then(res => {
+        this.requestAjax('get', 'receipt', this.requestParam).then(res => {
           if(res.success) {
             this.price = res.data.price
             this.data = res.data.rows
@@ -207,8 +207,8 @@
               {title:'收款方式',id:'way',type:'select-opts',titlespan:4,colspan:8,relation: '',required:true, select: this.paymentMode}],
             [{title:'收款金额(元)',id:'price',type:'InputNumber',min: 0,titlespan:4,colspan:8,required:true},
               {title:'收款日期',id:'dates',type:'time',titlespan:4,colspan:8,required:true}],
-            [{link: true,linkOpts: [{title:'客户名称',id:'customerId',type:'select-opts',titlespan:4,colspan:8,required:true,disabled: type == 0, url: 'customerList'},
-                {title:'客户联系人',id:'contactId',type:'select-opts',titlespan:4,colspan:8,required:true,disabled: type == 0, url: 'contactList',parmsId: 'customerId'}]}],
+            [{link: true,linkOpts: [{title:'客户名称',id:'customerId',type:'select-opts',titlespan:4,colspan:8,required:true, url: 'customerList'},
+                {title:'客户联系人',id:'contactId',type:'select-opts',titlespan:4,colspan:8,required:true, url: 'contactList',parmsId: 'customerId'}]}],
             [{title:'毛利(元)',id:'gm',type:'InputNumber',min: 0,titlespan:4,colspan:8,relation: '',required:false},
               {title:'负责人',id:'principal',type:'select-opts', filterable: true,titlespan:4,colspan:8,relation: '',required:true, select: this.userList}],
             [{title:'备注',id:'remark',type:'textarea',titlespan:4,colspan:20,required:false}]],
@@ -222,11 +222,11 @@
           name: row ? row.name : '',
           ordersId: row ? row.ordersId : '',
           way: row ? row.way : '',
-          price: row ? row.price : '',
+          price: row ? row.price : 0,
           dates: row && row.dates ? new Date(row.dates.time).format('yyyy-MM-dd hh:mm:ss') : '',
           customerId: row ? row.customerId : '',
           contactId: row ? row.contactId : '',
-          gm: row ? row.gm : '',
+          gm: row ? row.gm : 0,
           principal: row ? row.principal : this.userId,
           remark: row ? row.remark : '',
         }
@@ -299,18 +299,21 @@
       },
       orderChange(val){
         this.requestOrder(val)
-        /*const msg = this.$Message.loading({ content: '加载订单产品明细...', duration: 0})
-        setTimeout(msg, 5000)*/
+
       },
       requestOrder(id) {
         this.requestAjax('get', 'order', {}, id).then(res => {
           if(res.success) {
-            let products = []
-            let productJson = JSON.parse(res.data.rows.productJson)
+            let products = [], rows = res.data.rows
+            let productJson = JSON.parse(rows.productJson)
             productJson.forEach(item => {
               products.push(Object.assign({}, item, {receiptPrice: 0, maori: 0}))
             })
             this.dataModel = products
+            // customerId"contactId
+            this.inputForm.value.customerId = rows.customerId
+            this.inputForm.value.contactId = rows.contactId
+            this.inputForm.value.principal = rows.principal
           }
         })
       },

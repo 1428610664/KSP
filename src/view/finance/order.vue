@@ -332,7 +332,7 @@
         })
       },
       requestData() {
-        this.requestAjax('get', 'ordersList', this.requestParam).then(res => {
+        this.requestAjax('get', 'orders', this.requestParam).then(res => {
           if(res.success) {
             this.price = res.data.price
             this.data = res.data.rows
@@ -369,12 +369,12 @@
           width: '768',
           opintions: [
             [{title:'订单主题',id:'name',type:'input',titlespan:4,colspan:20,required:true}],
-            [{link: true,linkOpts: [{title:'客户名称',id:'customerId',type:'select-opts', filterable: true,titlespan:4,colspan:8,required:true, url: 'customerList'},
+            [{link: true,linkOpts: [{title:'客户名称',id:'customerId',type:'select-opts', titlespan:4,colspan:8,required:true, url: 'customerList'},
                 {title:'客户联系人',id: 'contactId',type:'select-opts',titlespan:4,colspan:8,required:true, url: 'contactList',parmsId: 'customerId'}]}],
             [{title:'成交金额(元)',id:'price',type:'InputNumber',min: 0,titlespan:4,colspan:8,required:true},
               {title:'签约日期',id:'signTime',type:'time',titlespan:4,colspan:8,required:true}],
             [{title:'所属商机',id:'businessId',type:'select-opts',titlespan:4,colspan:8,relation: '',required:true, select: this.business},
-              {title:'负责人',id:'principal',type:'select-opts', filterable: true,titlespan:4,colspan:8,relation: '',required:true, select: this.userList}],
+              {title:'负责人',id:'principal',type:'select-opts',titlespan:4,colspan:8,relation: '',required:true, select: this.userList}],
             [{title:'备注',id:'remark',type:'textarea',titlespan:4,colspan:20,required:false}]],
           button: [{
             type: 'primary',
@@ -386,7 +386,7 @@
           name: row ? row.name : '',
           customerId: row ? row.customerId : '',
           contactId: row ? row.contactId : '',
-          price: row ? row.price : '',
+          price: row ? row.price : 0,
           businessId: row ? row.businessId : '',
           principal: row ? row.principal : this.userId,
           signTime: row && row.signTime ? new Date(row.signTime.time).format('yyyy-MM-dd hh:mm:ss') : '',

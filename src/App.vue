@@ -17,9 +17,9 @@ export default {
     ])
   },
   created(){
-    setTimeout(() => {
+    this.$nextTick(() => {
       if(!(this.isLogin && (typeof this.isLogin == 'boolean')))  this.$router.replace({path:"/login"})
-    }, 20)
+    })
   },
   watch: {
     $route (to, from) {

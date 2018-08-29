@@ -13,6 +13,7 @@
                     :disabled="options[0].disabled"
                     :id="options[0].id"
                     :filterable="options[0].filterable"
+                    @on-change="customSelectChange(arguments[0], options[0])"
                     placement="bottom">
               <Option v-for="item in select1" :value="item.value" :key="item.value">{{ item.label }}
               </Option>
@@ -60,9 +61,11 @@
     },
     watch: {
       v1(v){
-        this.v2 = ''
-        this.requestVice(v)
-        this.$emit('change', this.options[0].id, v)
+        if(v){
+          this.v2 = ''
+          this.requestVice(v)
+          this.$emit('change', this.options[0].id, v)
+        }
       },
       v2(v){
         this.$emit('change', this.options[1].id, v)
@@ -72,6 +75,16 @@
           this.v1 = this.fromVal[v[0].id]
           this.v2 = this.fromVal[v[1].id]
           v2 = this.fromVal[v[1].id]
+        },
+        deep: true
+      },
+      fromVal: {
+        handler(v) {
+          if(this.fromVal[this.options[0].id] != this.v1 || this.fromVal[this.options[1].id] != this.v2){
+            this.v1 = this.fromVal[this.options[0].id]
+            this.v2 = this.fromVal[this.options[1].id]
+            v2 = this.fromVal[this.options[1].id]
+          }
         },
         deep: true
       }
@@ -106,6 +119,11 @@
           arr.push({value: item.id, label: item.name})
         })
         return arr
+      },
+      customSelectChange(v , opts){
+        if(opts.change) {
+          this.$emit('changeExternal', v, opts.change)
+        }
       }
     }
   }

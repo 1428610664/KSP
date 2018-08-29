@@ -24,7 +24,7 @@
                  <h3 class="c2" style="font-weight: bold" :style="{textAlign: rows.align ? rows.align: 'left'}">{{rows.title}}</h3>
              </div>
              <div v-else-if="rows.link" class="m-t5 m-b5">
-               <v-select :options="rows.linkOpts" :fromVal="fromVal" @change="linkChange"></v-select>
+               <v-select :options="rows.linkOpts" :fromVal="fromVal" @change="linkChange" @changeExternal="changeExternal"></v-select>
              </div>
               <div v-else>
                 <i-col :span="rows.titlespan">
@@ -373,6 +373,12 @@
        */
       linkChange(id, v){
         this.fromVal[id] = v
+      },
+      /**
+       * 外部监听
+       */
+      changeExternal(id, v){
+        this.$emit(v, id)
       },
 
       /**

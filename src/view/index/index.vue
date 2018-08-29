@@ -21,7 +21,7 @@
 
       <div class="user-pic-wrapper posct cursor-p"><img src="https://www.juniwota.com/qj/mice/static/img/logo_core.f06b04f.gif"></div>
 
-      <Menu :active-name="activeNenu" :accordion="true" ref="refName" theme="dark" @on-select="changeMenu" class="menu-wrapper" style="height: calc( 100vh - 156px ); overflow: auto">
+      <Menu :active-name="activeNenu" :accordion="true" ref="refName" theme="dark" @on-select="changeMenu" class="menu-wrapper" style="height: calc( 100vh - 156px ); overflow-y: auto">
         <template v-for="(v, k, i) in loadMian">
           <Submenu v-if="v.children != undefined" :name="v.path" class="text-a-left">
             <template slot="title">
@@ -68,37 +68,7 @@
           value: {}
         },
         activeNenu: this.$route.path,
-        loadMian: [/*
-          {path: '0', title:  '统计分析',children:[
-              {path: '/quarter', title:  '季度报表'}
-            ]},
-          {path: '1', title:  '客户管理',children:[
-              {path: '/customerManage', title:  '客户管理'},
-              {path: '/contactManage',title:  '联系人管理'}
-            ]},
-          {path: '2', title:  '商机管理',children:[
-              {path: '/businessManage',title:  '商业机会管理'}
-            ]},
-          {path: '3', title:  '活动管理',children:[
-              {path: '/activityManage', title:  '活动管理'}
-            ]},
-          {path: '4', title:  '财务管理',children:[
-              {path: '/orderManege', title:  '订单管理'},
-              {path: '/gatheringManege',title:  '收款管理'},
-            ]},
-          {path: '5', title:  '数据维护',children:[
-              {path: '/productManage', title:  '产品管理'},
-              {path: '/systemSetup',title:  '系统数据设置'},
-              {path: '/custom/customer', title:  '自定义字段'},
-              {path: '/enum', title:  '枚举参数'}
-            ]},
-          {path: '6', title:  '权限管理',children:[
-              {path: '/userManage', title:  '用户管理'},
-              {path: '/organizationStructure',title:  '组织结构'},
-              {path: '/roleManage',title:  '角色管理'},
-              {path: '/userPermission',title:  '用户权限'}
-            ]}
-        */],
+        loadMian: [],
       }
     },
     computed: {
