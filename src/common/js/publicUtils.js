@@ -240,6 +240,18 @@ export default {
       return d
     }
 
+    Vue.prototype.weekIndexInYear = (date) => {
+      var nowDate = new Date(date ? date : new Date()),
+        initTime = new Date(date ? date : new Date())
+      initTime.setMonth(0)
+      initTime.setDate(1)
+      var differenceVal = nowDate - initTime,
+        todayYear = Math.ceil(differenceVal/(24*60*60*1000)),
+        index = Math.ceil(todayYear/7)
+      return index
+    }
+
+
     /**
      * 枚举 Key 值
      * @type {{activityMode: string, classify: string, role: string, winRate: string, industry: string, level: string}}

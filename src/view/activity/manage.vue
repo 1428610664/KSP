@@ -129,6 +129,7 @@
           {title: '预计费用',show: true, key: 'pricePlan', width: 120, sortable: true, render: this.tdRender},
           {title: '实际费用',show: true, key: 'priceActual', width: 120, sortable: true, render: this.tdRender},
           {title: '负责人',show: true, key: 'principalName', width: 140, sortable: true, render: this.tdRender},
+          {title: '负责部门',show: true, key: 'principalDepartmentName', width: 140, sortable: true, render: this.tdRender},
           {title: '操作',show: true,
             width: 220,
             align: 'center',

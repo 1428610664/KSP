@@ -64,6 +64,8 @@ export default {
         // 销售任务
         salesTask: '/salesTask',
         deleteSalesTask: `/salesTask/${id}`,
+        // 报表
+        report: '/report',
       }
       return urlJson[name]
     }

@@ -95,6 +95,7 @@
           }},
           {title: '毛利', key: 'gm', width: 120, sortable: true, render: this.tdRender},
           {title: '负责人', key: 'principalName', width: 140, sortable: true, render: this.tdRender},
+          {title: '负责部门', key: 'principalDepartmentName', width: 140, sortable: true, render: this.tdRender},
           {title: '操作',
             width: 140,
             align: 'center',

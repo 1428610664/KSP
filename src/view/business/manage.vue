@@ -111,6 +111,8 @@
           {title: '产品',show: true, key: 'productName', width: 160, sortable: true, render: this.tdRender},
           {title: '预计下单日期',show: true, key: 'orderDate', width: 160, sortable: true, render: this.tdRender},
           {title: '客户需求描述',show: true, key: 'descs', width: 220, sortable: true, render: this.tdRender},
+          {title: '负责人',show: true, key: 'principalName', width: 140, sortable: true},
+          {title: '负责部门',show: true, key: 'principalDepartmentName', width: 140, sortable: true},
           {title: '操作',show: true,
             width: 140,
             align: 'center',

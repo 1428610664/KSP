@@ -260,6 +260,7 @@
             }},
           {title: '所属商机', key: 'businessName', sortable: true, render: this.tdRender},
           {title: '负责人', key: 'principalName', sortable: true, render: this.tdRender},
+          {title: '负责部门', key: 'principalDepartmentName', sortable: true, render: this.tdRender},
           {title: '操作',
             width: 140,
             align: 'center',

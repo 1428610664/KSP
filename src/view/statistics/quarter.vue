@@ -2,14 +2,14 @@
   <div class="wrapper b wrapper-box m-10">
     <div class="clear">
       <div class="fr c3">
-        <Select v-model="requestParam.year" style="width:120px">
+        <Select v-model="requestParam.year" @on-change="yearChange" style="width:120px">
           <Option v-for="item in yearList" :value="item.value" :key="item.value">{{ item.label }}</Option>
         </Select>
         <Select v-model="requestParam.quarter" style="width:80px" class="m-r5">
-          <Option v-for="item in quarterList" :value="item.value" :key="item.value">{{ item.label }}</Option>
+          <Option v-for="item in quarterList" :value="item.value" :key="item.value" :disabled="item.disabled">{{ item.label }}</Option>
         </Select>
         <span>选择部门：</span>
-        <Select v-model="department" :multiple="true" :filterable="true" style="width:160px" class="m-r5">
+        <Select v-model="departmentIds" :multiple="true" :filterable="true" style="width:160px" class="m-r5">
           <Option v-for="item in departments" :value="item.value" :key="item.value">{{ item.label }}</Option>
         </Select>
         <span>负责人：</span>
@@ -17,7 +17,7 @@
           <Option v-for="item in userList" :value="item.value" :key="item.value">{{ item.label }}</Option>
         </Select>
         <span>选择产品线：</span>
-        <Select v-model="product" :multiple="true" :filterable="true" style="width:160px">
+        <Select v-model="proIds" :multiple="true" :filterable="true" style="width:160px">
           <Option v-for="item in products" :value="item.value" :key="item.value">{{ item.label }}</Option>
         </Select>
         <Button type="primary" @click="searchEvent">查询</Button>
@@ -51,10 +51,10 @@
       </div>
       <div class="fbox">
         <div class="flex">
-          <div id="chart3" style="width: 100%; height: 480px"></div>
+          <div id="chart4" style="width: 100%; height: 480px"></div>
         </div>
         <div class="flex">
-          <div id="chart4" style="width: 100%; height: 480px"></div>
+          <div id="chart3" style="width: 100%; height: 480px"></div>
         </div>
       </div>
       <div id="chart5" style="width: 100%; height: 480px"></div>
@@ -71,27 +71,30 @@
     data() {
       return {
         principal: [],
-        department: [],
-        product: [],
+        departmentIds: [],
+        proIds: [],
+        quarter: '',
+        year: '',
         requestParam: {
+          year: '',
+          quarter: '',
           principal: '',
-          year: '2018',
-          quarter: 'Q1',
-          department: '',
-          product: '',
+          departmentIds: '',
+          proIds: '',
           limit: 20,
           offset: 1
         },
-        yearList: [{value: '2018', label: '2018'},{value: '2017', label: '2017'},{value: '2016', label: '2016'},{value: '2015', label: '2015'}],
-        quarterList: [{value: 'Q1', label: 'Q1'},{value: 'Q2', label: 'Q2'},{value: 'Q3', label: 'Q3'},{value: 'Q4', label: 'Q4'}],
+        yearList: [],
+        quarterList: [],
 
         departments: [],  // 部门
         products: [],     // 产品
         userList: [],     // 负责人
+        t4Weeks: [1,2,3,4,5,6,7,8,9,10,11,12,13],      // 周
 
         t1Data: [
-          {name: '收款', start_RAD_BP: 1,end_RAD_BP: 2},
-          {name: '毛利', start_RAD_BP: 11,end_RAD_BP: 22}
+          {name: '收款', a: 0,b: 0, c: 0},
+          {name: '毛利', a: 0,b: 0, c: 0}
         ],
         t1Columns: [
 
@@ -100,163 +103,204 @@
               { title: ' ', key: 'name', align: 'center'},
               {
                 title: '销售任务',
-                key: 'start_RAD_BP',
+                key: 'a',
                 align: 'center',
               },{
                 title: '完成任务',
-                key: 'end_RAD_BP',
+                key: 'b',
                 align: 'center',
               },{
                 title: '完成比例',
-                key: 'end_RAD_BP',
+                key: 'c',
                 align: 'center',
               }]
           }
         ],
-        t2Data: [
-          {name: 1, start_RAD_SOW: 1,end_RAD_SOW: 2},
-          {name: 11, start_RAD_SOW: 11,end_RAD_SOW: 22}
-        ],
+        t2Data: [{a: 0, b: 0,c: 0, d: 0}],
         t2Columns: [
           { title: '商机统计（万元）', align: 'center',
             children: [
               {
                 title: '绿（75%~90%）',
-                key: 'start_RAD_SOW',
+                key: 'a',
                 align: 'center',
               },{
                 title: '黄（50%）',
-                key: 'end_RAD_SOW',
+                key: 'b',
                 align: 'center',
               },{
                 title: '红（10%~25%）',
-                key: 'end_RAD_SOW',
+                key: 'c',
                 align: 'center',
               },{
                 title: '合计',
-                key: 'end_RAD_SOW',
+                key: 'd',
                 align: 'center',
               }]
           }
         ],
         t3Data: [
-          {name: '收款', start_RFM_R: 1,end_RFM_R: 2,start_RFM_F: 11,end_RFM_F: 22,start_RFM_M: 111,end_RFM_M: 222},
-          {name: '毛利', start_RFM_R: 1,end_RFM_R: 2,start_RFM_F: 11,end_RFM_F: 22,start_RFM_M: 111,end_RFM_M: 222}
+          {name: '收款', a1: 0,b1: 0,c1: '0%',a2: 0,b2: 0,c2: '0%',a3: 0,b3: 0,c3: '0%'},
+          {name: '毛利', a1: 0,b1: 0,c1: '0%',a2: 0,b2: 0,c2: '0%',a3: 0,b3: 0,c3: '0%'}
         ],
         t3Columns: [
           {
             title: '月度任务（万元）', align: 'center',
             children: [{ title: ' ', key: 'name', align: 'center', width: 120 },
-              { title: 'M1（1月）', align: 'center',
+              {align: 'center',
+                renderHeader:(h, params) => {
+                  let quarter = this._getQuarter()
+                  return h('div', [h('strong', "M"+ quarter[0] +"（"+ quarter[0] +"月）")]);
+                },
                 children: [
                   {
                     title: '销售任务',
-                    key: 'start_RFM_R',
+                    key: 'a1',
                     align: 'center',
                   },{
                     title: '完成任务',
-                    key: 'end_RFM_R',
+                    key: 'b1',
                     align: 'center',
                   },{
                     title: '完成比例',
-                    key: 'end_RFM_R',
+                    key: 'c1',
                     align: 'center',
                   }]
               },
-              { title: 'M2（2月）', align: 'center',
+              { align: 'center',
+                renderHeader:(h, params) => {
+                  let quarter = this._getQuarter()
+                  return h('div', [h('strong', "M"+ quarter[1] +"（"+ quarter[1] +"月）")]);
+                },
                 children: [
                   {
                     title: '销售任务',
-                    key: 'start_RFM_R',
+                    key: 'a2',
                     align: 'center',
                   },{
                     title: '完成任务',
-                    key: 'end_RFM_R',
+                    key: 'b2',
                     align: 'center',
                   },{
                     title: '完成比例',
-                    key: 'end_RFM_R',
+                    key: 'c2',
                     align: 'center',
                   }]
               },
-              { title: 'M3（3月）', align: 'center',
+              { align: 'center',
+                renderHeader:(h, params) => {
+                  let quarter = this._getQuarter()
+                  return h('div', [h('strong', "M"+ quarter[2] +"（"+ quarter[2] +"月）")]);
+                },
                 children: [
                   {
                     title: '销售任务',
-                    key: 'start_RFM_R',
+                    key: 'a3',
                     align: 'center',
                   },{
                     title: '完成任务',
-                    key: 'end_RFM_R',
+                    key: 'b3',
                     align: 'center',
                   },{
                     title: '完成比例',
-                    key: 'end_RFM_R',
+                    key: 'c3',
                     align: 'center',
                   }]
               }]
           }
         ],
         t4Data: [
-          {name: '收款', start_RFM_R: 1,end_RFM_R: 2,start_RFM_F: 11,end_RFM_F: 22,start_RFM_M: 111,end_RFM_M: 222},
-          {name: '毛利', start_RFM_R: 1,end_RFM_R: 2,start_RFM_F: 11,end_RFM_F: 22,start_RFM_M: 111,end_RFM_M: 222},
-          {name: '完成比例', start_RFM_R: 1,end_RFM_R: 2,start_RFM_F: 11,end_RFM_F: 22,start_RFM_M: 111,end_RFM_M: 222},
+          {name: '收款', w1: 0,w2: 0,w3: 0,w4: 0,w5: 0,w6: 0,w7: 0,w8: 0,w9: 0,w10: 0,w11: 0,w12: 0,w13: 0},
+          {name: '毛利', w1: 0,w2: 0,w3: 0,w4: 0,w5: 0,w6: 0,w7: 0,w8: 0,w9: 0,w10: 0,w11: 0,w12: 0,w13: 0},
+          {name: '完成比例', w1: 0,w2: 0,w3: 0,w4: 0,w5: 0,w6: 0,w7: 0,w8: 0,w9: 0,w10: 0,w11: 0,w12: 0,w13: 0},
         ],
         t4Columns: [
           {
             title: '过程管理', align: 'center',
             children: [{ title: '进程管理', key: 'name', align: 'center', width: 120 },
               {
-                title: '第1周',
-                key: 'start_RFM_R',
+                renderHeader:(h, params) => {
+                  return h('div',{'class': this._getClass(params)}, [h('strong', '第'+this.t4Weeks[params.index-1]+'周')])
+                },
+                key: 'w1',
                 align: 'center',
               },{
-                title: '第2周',
-                key: 'end_RFM_R',
+                renderHeader:(h, params) => {
+                  return h('div',{'class': this._getClass(params)}, [h('strong', '第'+this.t4Weeks[params.index-1]+'周')])
+                },
+                key: 'w2',
                 align: 'center',
               },{
-                title: '第3周',
-                key: 'end_RFM_R',
+                renderHeader:(h, params) => {
+                  return h('div',{'class': this._getClass(params)}, [h('strong', '第'+this.t4Weeks[params.index-1]+'周')])
+                },
+                key: 'w3',
                 align: 'center',
               },{
-                title: '第4周',
-                key: 'start_RFM_R',
+                renderHeader:(h, params) => {
+                  return h('div',{'class': this._getClass(params)}, [h('strong', '第'+this.t4Weeks[params.index-1]+'周')])
+                },
+                key: 'w4',
                 align: 'center',
               },{
-                title: '第5周',
-                key: 'end_RFM_R',
+                renderHeader:(h, params) => {
+                  return h('div',{'class': this._getClass(params)}, [h('strong', '第'+this.t4Weeks[params.index-1]+'周')])
+                },
+                key: 'w5',
                 align: 'center',
               },{
-                title: '第6周',
-                key: 'end_RFM_R',
+                renderHeader:(h, params) => {
+                  return h('div',{'class': this._getClass(params)}, [h('strong', '第'+this.t4Weeks[params.index-1]+'周')])
+                },
+                key: 'w6',
                 align: 'center',
               },{
-                title: '第7周',
-                key: 'start_RFM_R',
+                renderHeader:(h, params) => {
+                  return h('div',{'class': this._getClass(params)}, [h('strong', '第'+this.t4Weeks[params.index-1]+'周')])
+                },
+                key: 'w7',
                 align: 'center',
               },{
-                title: '第8周',
-                key: 'end_RFM_R',
+                renderHeader:(h, params) => {
+                  return h('div',{'class': this._getClass(params)}, [h('strong', '第'+this.t4Weeks[params.index-1]+'周')])
+                },
+                key: 'w8',
                 align: 'center',
               },{
-                title: '第9周',
-                key: 'end_RFM_R',
+                renderHeader:(h, params) => {
+                  return h('div',{'class': this._getClass(params)}, [h('strong', '第'+this.t4Weeks[params.index-1]+'周')])
+                },
+                key: 'w9',
                 align: 'center',
               },{
-                title: '第10周',
-                key: 'start_RFM_R',
+                renderHeader:(h, params) => {
+                  return h('div',{'class': this._getClass(params)}, [h('strong', '第'+this.t4Weeks[params.index-1]+'周')])
+                },
+                key: 'w10',
                 align: 'center',
               },{
-                title: '第11周',
-                key: 'end_RFM_R',
+                renderHeader:(h, params) => {
+                  return h('div',{'class': this._getClass(params)}, [h('strong', '第'+this.t4Weeks[params.index-1]+'周')])
+                },
+                key: 'w11',
                 align: 'center',
               },{
-                title: '第12周',
-                key: 'end_RFM_R',
+                renderHeader:(h, params) => {
+                  return h('div',{'class': this._getClass(params)}, [h('strong', '第'+this.t4Weeks[params.index-1]+'周')])
+                },
+                key: 'w12',
                 align: 'center',
               },{
-                title: '第13周',
-                key: 'start_RFM_R',
+                renderHeader:(h, params) => {
+                  return h('div',{'class': this._getClass(params)}, [h('strong', '第'+this.t4Weeks[params.index-1]+'周')])
+                },
+                key: 'w13',
+                align: 'center',
+              },{
+                renderHeader:(h, params) => {
+                  return h('div',{'class': this._getClass(params)}, [h('strong', this.t4Weeks[params.index-1] ? '第'+this.t4Weeks[params.index-1]+'周' : '')])
+                },
+                key: 'w14',
                 align: 'center',
               }
             ]
@@ -264,27 +308,63 @@
         ],
 
         charts: {},
-
       }
     },
     created() {
       this.$nextTick(() => {
+        this.initParams()
         this.initChart()
         this.resizeChart()
         this.requestCommons()
+        this.requestData()
       })
     },
     methods: {
+      yearChange(v){
+        this.setQuarterList(v)
+      },
+      setQuarterList(v){
+        let d = new Date(), year = d.getFullYear(),
+          quarter = Math.ceil((d.getMonth() + 1) / 3),
+          quarterList = []
+        if(v == year) {
+          for(let i = 1; i < 5; i++){
+            quarterList.push({value: i+'', label: 'Q' + i, disabled: i > quarter ? true : false})
+          }
+        }else {
+          quarterList = [{value: '1', label: 'Q1', disabled: false},{value: '2', label: 'Q2', disabled: false},{value: '3', label: 'Q3', disabled: false},{value: '4', label: 'Q4', disabled: false}]
+        }
+        this.quarterList = quarterList
+      },
       searchEvent() {
         this.requestParam.limit = 20
         this.requestParam.offset = 1
-        this.requestParam.department = this.department.join(',')
-        this.requestParam.product = this.product.join(',')
+        this.requestParam.departmentIds = this.departmentIds.join(',')
+        this.requestParam.proIds = this.proIds.join(',')
         this.requestParam.principal = this.principal.join(',')
         this.requestData()
       },
-      requestData(){
+      initParams(){
+        let d = new Date(), year = d.getFullYear(), yearList = [],quarter = Math.ceil((d.getMonth() + 1) / 3),quarterList = []
+        for(let i = 0; i < 4; i++){
+          yearList.push({value: (year - i) + '', label: (year - i) + ''})
+        }
+        this.yearList = yearList
+        this.setQuarterList(year)
 
+        this.requestParam.year = d.getFullYear() + ''
+        this.requestParam.quarter = Math.ceil((d.getMonth() + 1) / 3) + ''
+        this.quarter = Math.ceil((d.getMonth() + 1) / 3) + ''
+      },
+      requestData(){
+        this.requestAjax('get', 'report', this.requestParam).then(res => {
+          this.$Message[res.success ? 'success' : 'warning'](res.desc)
+          if(res.success) {
+            this.quarter = this.requestParam.quarter
+            this.year = this.requestParam.year
+            this._parseData(res.data)
+          }
+        })
       },
       requestCommons(){
         this.requestCommon({queryDepartment: true,queryUsers: true,queryProduct: true}, (res)=> {
@@ -389,6 +469,61 @@
             this.charts[k].resize()
           }
         }
+      },
+
+      _parseData(data){
+
+        let quarters = this._getQuarter(),
+          t3Data = [
+            {name: '收款', a1: 0,b1: 0,c1: '0%',a2: 0,b2: 0,c2: '0%',a3: 0,b3: 0,c3: '0%'},
+            {name: '毛利', a1: 0,b1: 0,c1: '0%',a2: 0,b2: 0,c2: '0%',a3: 0,b3: 0,c3: '0%'}
+          ]
+        let t4Data = [
+          {name: '收款', w1: 0,w2: 0,w3: 0,w4: 0,w5: 0,w6: 0,w7: 0,w8: 0,w9: 0,w10: 0,w11: 0,w12: 0,w13: 0},
+          {name: '毛利', w1: 0,w2: 0,w3: 0,w4: 0,w5: 0,w6: 0,w7: 0,w8: 0,w9: 0,w10: 0,w11: 0,w12: 0,w13: 0},
+          {name: '完成比例', w1: 0,w2: 0,w3: 0,w4: 0,w5: 0,w6: 0,w7: 0,w8: 0,w9: 0,w10: 0,w11: 0,w12: 0,w13: 0},
+        ], _i = 1, t4Weeks = []
+
+        if(!data) {
+          this.t1Data = [{name: '收款', a: 0,b: 0, c: 0}, {name: '毛利', a: 0,b: 0, c: 0}]
+          this.t2Data = [{a: 0, b: 0,c: 0, d: 0}]
+          this.t3Data = t3Data
+          this.t4Data = t4Data
+          return
+        }
+        this.t1Data = [{name: '收款', a: data.rlsQuarter.salesVolume,b: data.rlsQuarter.receiptSalesVolume, c: data.rlsQuarter.salesVolumeRatio.toFixed(2) + "%"},
+          {name: '毛利', a: data.rlsQuarter.grossProfit,b: data.rlsQuarter.receiptGrossProfit, c: data.rlsQuarter.grossProfitRatio.toFixed(2) + "%"}]
+        this.t2Data = [{a: data.business['75%-90%'], b: data.business['50%'],c: data.business['10%-25%'], d: data.business.total}]
+
+
+
+        for(let i = 1; i < 4; i++){
+          t3Data[0]['a' + i] = data.rlsMonth[quarters[i-1]].salesVolume.toFixed(2)
+          t3Data[0]['b' + i] = data.rlsMonth[quarters[i-1]].receiptSalesVolume.toFixed(2)
+          t3Data[0]['c' + i] = data.rlsMonth[quarters[i-1]].salesVolumeRatio.toFixed(2) + '%'
+          t3Data[1]['a' + i] = data.rlsMonth[quarters[i-1]].grossProfit.toFixed(2)
+          t3Data[1]['b' + i] = data.rlsMonth[quarters[i-1]].receiptGrossProfit.toFixed(2)
+          t3Data[1]['c' + i] = data.rlsMonth[quarters[i-1]].grossProfitRatio.toFixed(2) + '%'
+        }
+        this.t3Data = t3Data
+
+
+        for(let k in data.rlsWeek){
+          t4Weeks.push(k * 1)
+          t4Data[0]['w'+ _i] = data.rlsWeek[k].salesVolume.toFixed(2)
+          t4Data[1]['w'+ _i] = data.rlsWeek[k].grossProfit.toFixed(2)
+          t4Data[2]['w'+ _i] = data.rlsWeek[k].salesVolumeRatio.toFixed(2) + '%'
+          _i++
+        }
+        this.t4Weeks = t4Weeks
+        this.t4Data = t4Data
+      },
+      _getQuarter() {
+        let quarter = this.quarter * 3
+        return [quarter-2+"", quarter-1+"", quarter+""]
+      },
+      _getClass(params){
+        return this.year == new Date().getFullYear() && this.t4Weeks[params.index-1] > this.weekIndexInYear() ? 'c5' : ''
       }
     }
   }

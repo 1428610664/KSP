@@ -3,6 +3,7 @@
   <div class="wrapper-content">
     <div class="app-header b c3">
       <Row type="flex" justify="end">
+        <i-col class="header-col"><Icon class="fz16" style="vertical-align: sub" type="md-time" /> {{systemDate}}</i-col>
         <i-col class="header-col"><a class="hover-c3" @click="feedbackEvent"><Icon class="fz16" style="vertical-align: sub" type="md-clipboard" /> 反馈问题</a></i-col>
         <i-col class="header-col">
           <Dropdown @on-click="handleSubmit">
@@ -58,6 +59,7 @@
   export default {
     data() {
       return {
+        systemDate: new Date().format('yyyy-MM-dd hh:mm:ss'),
         type: 0,
         permissionUrls: [],
         inputForm: {
@@ -86,6 +88,7 @@
     },
     beforeCreate(){
       this.$nextTick(() => {
+        this._initSystemDate()
         if(this.userData) this.requestMenusByRoleId(this.userData.user.role)
       })
     },
@@ -255,6 +258,11 @@
         }, errror => {
           this.inputForm.modalDisabled = false
         })
+      },
+      _initSystemDate(){
+        setInterval(() => {
+          this.systemDate = new Date().format('yyyy-MM-dd hh:mm:ss')
+        },1000)
       }
     },
     components: {

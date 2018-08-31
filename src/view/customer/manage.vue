@@ -155,6 +155,7 @@
           {title: '网址',show: true, key: 'webUrl', width: 170, sortable: true, render: this.tdRender},
           {title: '分类',show: true, key: 'type', width: 120, sortable: true},
           {title: '负责人',show: true, key: 'principalName', width: 140, sortable: true},
+          {title: '负责部门',show: true, key: 'principalDepartmentName', width: 140, sortable: true},
           {title: '操作',show: true,
             width: 140,
             align: 'center',
