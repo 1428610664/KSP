@@ -137,7 +137,7 @@
         this.requestAjax('get', 'product', this.requestParam).then(res => {
           if(res.success) {
             this.data = res.data.rows
-            this.total = res.data.rows.length
+            this.total = res.data.total
           }
         })
       },

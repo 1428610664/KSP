@@ -256,7 +256,7 @@
           if(res.success) {
             this.data = res.data.rows
             this.bp = res.data.bp
-            this.total = res.data.rows.length
+            this.total = res.data.total
           }
         })
       },

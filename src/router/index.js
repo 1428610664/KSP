@@ -9,6 +9,7 @@ export default new Router({
     ? config.build.assetsPublicPath
     : config.dev.assetsPublicPath,
   mode: 'history',
+  scrollBehavior: () => ({ y: 0 }),
   routes: [
     { path: '/', redirect: '/index'},
     { path: '*', component: (resolve) => require(['../components/404'], resolve) },

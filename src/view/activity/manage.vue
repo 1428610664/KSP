@@ -224,7 +224,7 @@
           if(res.success) {
             this.priceActual = res.data.priceActual
             this.data = res.data.rows
-            this.total = res.data.rows.length
+            this.total = res.data.total
           }
         })
       },

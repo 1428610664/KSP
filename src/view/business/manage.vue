@@ -191,7 +191,7 @@
           if(res.success) {
             this.price = res.data.price
             this.data = res.data.rows
-            this.total = res.data.rows.length
+            this.total = res.data.total
           }
         })
       },

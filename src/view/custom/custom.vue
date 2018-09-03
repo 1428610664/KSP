@@ -109,7 +109,7 @@
       requestData() {
         this.requestAjax('get', 'props', this.requestParam).then(res => {
           if(res.success) {
-            this.total = res.data.rows.length
+            this.total = res.data.total
             this.data = res.data.rows
           }
         })

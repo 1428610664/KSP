@@ -12,10 +12,10 @@
         <Select v-model="departmentIds" :multiple="true" :filterable="true" style="width:160px" class="m-r5">
           <Option v-for="item in departments" :value="item.value" :key="item.value">{{ item.label }}</Option>
         </Select>
-        <span>负责人：</span>
-        <Select v-model="principal" :multiple="true" :filterable="true" style="width:160px" class="m-r5">
-          <Option v-for="item in userList" :value="item.value" :key="item.value">{{ item.label }}</Option>
-        </Select>
+        <!--<span>负责人：</span>-->
+        <!--<Select v-model="principal" :multiple="true" :filterable="true" style="width:160px" class="m-r5">-->
+          <!--<Option v-for="item in userList" :value="item.value" :key="item.value">{{ item.label }}</Option>-->
+        <!--</Select>-->
         <span>选择产品线：</span>
         <Select v-model="proIds" :multiple="true" :filterable="true" style="width:160px">
           <Option v-for="item in products" :value="item.value" :key="item.value">{{ item.label }}</Option>
@@ -308,6 +308,7 @@
         ],
 
         charts: {},
+        optionChart: {}
       }
     },
     created() {
@@ -382,7 +383,7 @@
         this.charts.chart4 = this.$echarts.init(document.getElementById('chart4'), 'macarons')
         this.charts.chart5 = this.$echarts.init(document.getElementById('chart5'), 'macarons')
 
-        let optionChart1 = {
+        this.optionChart.chart1 = {
           color: ['#2ec7c9', '#b6a2de'],
           title: {text: '季度任务',top: 4, left: 12,textStyle: {fontSize: 15, color: '#515a6e'}},
           tooltip: {trigger: 'axis', axisPointer: {type: 'shadow'}},
@@ -391,77 +392,69 @@
           xAxis: {type: 'category',data: ['销售回款','销售订单','销售毛利']},
           yAxis: {type: 'value',boundaryGap: [0, 0.01]},
           series: [
-            {name: '季销售任务',type: 'bar',barWidth: 20,animationDuration: 2800, animationEasing: 'cubicInOut',
-              data: [170, 134, 630]},
-            {name: '季完成任务',type: 'bar',barWidth: 20,animationDuration: 2800, animationEasing: 'quadraticOut',
-              data: [121, 131, 607]}
+            {name: '季销售任务',type: 'bar',barWidth: 20,animationDuration: 2800, animationEasing: 'cubicInOut', data: []},
+            {name: '季完成任务',type: 'bar',barWidth: 20,animationDuration: 2800, animationEasing: 'quadraticOut', data: []}
           ]
-        },
-          optionChart2 = {
+        }
+        this.optionChart.chart2 = {
             color: ['#2ec7c9', '#ffb980', '#d87a80'],
             title: {text: 'FY12Q1 - 商机明细表',top: 4, left: 12,textStyle: {fontSize: 15, color: '#515a6e'}},
             tooltip: {trigger: 'axis', axisPointer: {type: 'shadow'}},
             legend: {data: ['75%&90%', '50%', '10%&25%'], top: 24},
             grid: {left: '3%',right: '4%',bottom: '3%',containLabel: true},
-            xAxis: {type: 'category',data: ['W1','W2','W3','W4','W5','W6','W7','W8','W9','W10','W11','W12','W13']},
+            xAxis: {type: 'category',data: []},
             yAxis: {type: 'value',boundaryGap: [0, 0.01]},
-            series: [{name: '75%&90%',type: 'bar',animationDuration: 2800, animationEasing: 'cubicInOut',
-                data: [170, 134, 630,170, 134, 630,170, 134, 630,170, 134, 630,170]
-              },{name: '50%',type: 'bar',animationDuration: 2800, animationEasing: 'quadraticOut',
-                data: [121, 131, 607,121, 131, 607,121, 131, 607,121, 131, 607,121]
-              },{  name: '10%&25%',type: 'bar',animationDuration: 2800, animationEasing: 'cubicInOut',
-                data: [121, 131, 607,121, 131, 607,121, 131, 607,121, 131, 607,121]
+            series: [{name: '75%&90%',type: 'bar',animationDuration: 2800, animationEasing: 'cubicInOut', data: []
+              },{name: '50%',type: 'bar',animationDuration: 2800, animationEasing: 'quadraticOut', data: []
+              },{  name: '10%&25%',type: 'bar',animationDuration: 2800, animationEasing: 'cubicInOut', data: []
               }
-            ]
-          },
-          optionChart3 = {
-            title: {text: 'FY12Q1 - 周销售进度表',top: 4, left: 12,textStyle: {fontSize: 15, color: '#515a6e'}},
-            tooltip: {trigger: 'axis',axisPointer: {type: 'cross'},padding: [5, 10]},
-            legend: {data:['BGT','QTD'], top: 24},
-            grid: {left: '3%',right: '4%',bottom: '3%',containLabel: true},
-            xAxis: {type: 'category',boundaryGap: false,
-              data: ['W1','W2','W3','W4','W5','W6','W7','W8','W9','W10','W11','W12','W13']
-            },
-            yAxis: {type: 'value'},
-            series: [{name:'BGT',type:'line',smooth: true,stack: '总量',animationDuration: 2800, animationEasing: 'cubicInOut',
-                data:[120, 132, 101, 134, 90, 230, 210,120, 132, 101, 134, 90, 230]
-              },{name:'QTD',type:'line',smooth: true,stack: '总量',animationDuration: 2800, animationEasing: 'quadraticOut',
-                data:[220, 182, 191, 234, 290, 330, 310,120, 132, 101, 134, 90, 230]
-              }
-            ]
-          },
-          optionChart4 = {
-            color: ['#2ec7c9', '#ffb980'],
-            title: {text: 'FY12Q1 - 月销售进度表',top: 4, left: 12,textStyle: {fontSize: 15, color: '#515a6e'}},
-            tooltip: {trigger: 'axis', axisPointer: {type: 'shadow'}},
-            legend: {data: ['预算', 'QTD'], top: 24},
-            grid: {left: '3%',right: '4%',bottom: '3%',containLabel: true},
-            xAxis: {type: 'category',data: ['销售回款','销售订单','销售毛利']},
-            yAxis: {type: 'value',boundaryGap: [0, 0.01]},
-            series: [
-              {name: '预算',type: 'bar',animationDuration: 2800, animationEasing: 'cubicInOut',barWidth: 20,data: [170, 134, 630]},
-              {name: 'QTD',type: 'bar',animationDuration: 2800, animationEasing: 'quadraticOut', barWidth: 20,data: [121, 131, 607]}
-            ]
-          },
-          optionChart5 = {
-            title: {text: '当月销售趋势图',top: 4, left: 12,textStyle: {fontSize: 15, color: '#515a6e'}},
-            tooltip: {trigger: 'axis',axisPointer: {type: 'cross'},padding: [5, 10]},
-            legend: {data:['回款','订单','毛利'], top: 24},
-            grid: {left: '3%',right: '4%',bottom: '3%',containLabel: true},
-            xAxis: {type: 'category',boundaryGap: false,data: ['8.1','8.2','8.3','8.4','8.5','8.6','8.7']},
-            yAxis: {type: 'value'},
-            series: [
-              {name:'回款',type:'line',smooth: true,stack: '总量',animationDuration: 2800, animationEasing: 'cubicInOut',data:[120, 132, 101, 134, 90, 230, 210]},
-              {name:'订单',type:'line',smooth: true,stack: '总量',animationDuration: 2800, animationEasing: 'quadraticOut',data:[220, 182, 191, 234, 290, 330, 310]},
-              { name:'毛利',type:'line',smooth: true,stack: '总量',animationDuration: 2800, animationEasing: 'backOut',data:[150, 232, 201, 154, 190, 330, 410]}
             ]
           }
+        this.optionChart.chart3 = {
+          title: {text: 'FY12Q1 - 周销售进度表',top: 4, left: 12,textStyle: {fontSize: 15, color: '#515a6e'}},
+          tooltip: {trigger: 'axis',axisPointer: {type: 'cross'},padding: [5, 10]},
+          legend: {data:['BGT','QTD'], top: 24},
+          grid: {left: '3%',right: '4%',bottom: '3%',containLabel: true},
+          xAxis: {type: 'category',boundaryGap: false, data: []
+          },
+          yAxis: {type: 'value'},
+          series: [{name:'BGT',type:'line',smooth: true,stack: '总量',animationDuration: 2800, animationEasing: 'cubicInOut', data:[]
+            },{name:'QTD',type:'line',smooth: true,stack: '总量',animationDuration: 2800, animationEasing: 'quadraticOut', data:[]
+            }
+          ]
+        }
+        this.optionChart.chart4 = {
+          color: ['#2ec7c9', '#ffb980'],
+          title: {text: 'FY12Q1 - 月销售进度表',top: 4, left: 12,textStyle: {fontSize: 15, color: '#515a6e'}},
+          tooltip: {trigger: 'axis', axisPointer: {type: 'shadow'}},
+          legend: {data: ['预算', 'QTD'], top: 24},
+          grid: {left: '3%',right: '4%',bottom: '3%',containLabel: true},
+          xAxis: {type: 'category',data: []},
+          yAxis: {type: 'value',boundaryGap: []},
+          series: [
+            {name: '预算',type: 'bar',animationDuration: 2800, animationEasing: 'cubicInOut',barWidth: 20,data: []},
+            {name: 'QTD',type: 'bar',animationDuration: 2800, animationEasing: 'quadraticOut', barWidth: 20,data: []}
+          ]
+        }
+        this.optionChart.chart5 = {
+          title: {text: '当月销售趋势图',top: 4, left: 12,textStyle: {fontSize: 15, color: '#515a6e'}},
+          tooltip: {trigger: 'axis',axisPointer: {type: 'cross'},padding: [5, 10]},
+          legend: {data:['回款','订单','毛利'], top: 24},
+          grid: {left: '3%',right: '4%',bottom: '3%',containLabel: true},
+          xAxis: {type: 'category',boundaryGap: false,data: []},
+          yAxis: {type: 'value'},
+          series: [
+            {name:'回款',type:'line',smooth: true,stack: '总量',animationDuration: 2800, animationEasing: 'cubicInOut',data:[]},
+            {name:'订单',type:'line',smooth: true,stack: '总量',animationDuration: 2800, animationEasing: 'quadraticOut',data:[]},
+            { name:'毛利',type:'line',smooth: true,stack: '总量',animationDuration: 2800, animationEasing: 'backOut',data:[]}
+          ]
+        }
 
-        this.charts.chart1.setOption(optionChart1)
-        this.charts.chart2.setOption(optionChart2)
-        this.charts.chart3.setOption(optionChart3)
-        this.charts.chart4.setOption(optionChart4)
-        this.charts.chart5.setOption(optionChart5)
+        this.charts.chart1.setOption(this.optionChart.chart1)
+        this.charts.chart2.setOption(this.optionChart.chart2)
+        this.charts.chart3.setOption(this.optionChart.chart3)
+        this.charts.chart4.setOption(this.optionChart.chart4)
+        this.charts.chart5.setOption(this.optionChart.chart5)
       },
       resizeChart(){
         window.onresize = () => {
@@ -517,6 +510,65 @@
         }
         this.t4Weeks = t4Weeks
         this.t4Data = t4Data
+
+        let chart1Key = [], Chart1Vla1 = [], Chart1Vla2 = []
+        for(let k in data.quarterJobChar){
+          chart1Key.push(k)
+          Chart1Vla1.push( data.quarterJobChar[k][0])
+          Chart1Vla2.push( data.quarterJobChar[k][1])
+        }
+        this.optionChart.chart1.xAxis.data = chart1Key
+        this.optionChart.chart1.series[0].data = Chart1Vla1
+        this.optionChart.chart1.series[1].data = Chart1Vla2
+        this.charts.chart1.setOption(this.optionChart.chart1)
+
+        let chart2Key = [], Chart2Vla1 = [], Chart2Vla2 = [], Chart2Vla3 = []
+        for(let k in data.businessByWeeksJobChar){
+          chart2Key.push(k)
+          Chart2Vla3.push( data.businessByWeeksJobChar[k]['10%-25%'])
+          Chart2Vla2.push( data.businessByWeeksJobChar[k]['50%'])
+          Chart2Vla1.push( data.businessByWeeksJobChar[k]['75%-90%'])
+        }
+        this.optionChart.chart2.xAxis.data = chart2Key
+        this.optionChart.chart2.series[0].data = Chart2Vla1
+        this.optionChart.chart2.series[1].data = Chart2Vla2
+        this.optionChart.chart2.series[2].data = Chart2Vla3
+        this.charts.chart2.setOption(this.optionChart.chart2)
+
+        let chart3Key = [], Chart3Vla1 = [], Chart3Vla2 = []
+        for(let k in data.salesByWeeksJobChar){
+          chart3Key.push(k)
+          Chart3Vla2.push( data.salesByWeeksJobChar[k]['QTD'])
+          Chart3Vla1.push( data.salesByWeeksJobChar[k]['BGT'])
+        }
+        this.optionChart.chart3.xAxis.data = chart3Key
+        this.optionChart.chart3.series[0].data = Chart3Vla1
+        this.optionChart.chart3.series[1].data = Chart3Vla2
+        this.charts.chart3.setOption(this.optionChart.chart3)
+
+        let chart4Key = [], Chart4Vla1 = [], Chart4Vla2 = []
+        for(let k in data.salesByMonthJobChar){
+          chart4Key.push(k)
+          Chart4Vla1.push( data.salesByMonthJobChar[k]['QTD'])
+          Chart4Vla2.push( data.salesByMonthJobChar[k]['预算'])
+        }
+        this.optionChart.chart4.xAxis.data = chart4Key
+        this.optionChart.chart4.series[0].data = Chart4Vla1
+        this.optionChart.chart4.series[1].data = Chart4Vla2
+        this.charts.chart4.setOption(this.optionChart.chart4)
+
+        let chart5Key = [], Chart5Vla1 = [], Chart5Vla2 = [], Chart5Vla3 = []
+        for(let k in data.nowMonthChar){
+          chart5Key.push(k)
+          Chart5Vla1.push( data.nowMonthChar[k]['回款'])
+          Chart5Vla2.push( data.nowMonthChar[k]['毛利'])
+          Chart5Vla3.push( data.nowMonthChar[k]['订单'])
+        }
+        this.optionChart.chart5.xAxis.data = chart5Key
+        this.optionChart.chart5.series[0].data = Chart5Vla1
+        this.optionChart.chart5.series[1].data = Chart5Vla2
+        this.optionChart.chart5.series[2].data = Chart5Vla3
+        this.charts.chart5.setOption(this.optionChart.chart5)
       },
       _getQuarter() {
         let quarter = this.quarter * 3
@@ -524,6 +576,10 @@
       },
       _getClass(params){
         return this.year == new Date().getFullYear() && this.t4Weeks[params.index-1] > this.weekIndexInYear() ? 'c5' : ''
+      },
+      _getParseDay(day){
+        let days = day.split("-")
+        return days[1] + '.' + days[2]
       }
     }
   }
