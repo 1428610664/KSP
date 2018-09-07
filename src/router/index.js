@@ -11,7 +11,8 @@ export default new Router({
   mode: 'history',
   scrollBehavior: () => ({ y: 0 }),
   routes: [
-    { path: '/', redirect: '/index'},
+    { path: '/', redirect: '/quarter'},
+    { path: '/index', redirect: '/quarter'},
     { path: '*', component: (resolve) => require(['../components/404'], resolve) },
     {
       name: '用户登录',
@@ -27,6 +28,11 @@ export default new Router({
           name: '季度统计',
           path: '/quarter',
           component: (resolve) => require(['../view/statistics/quarter'], resolve),
+        },
+        {
+          name: '销售漏斗',
+          path: '/funnel',
+          component: (resolve) => require(['../view/statistics/funnel'], resolve),
         },
         {
           name: '客户管理',

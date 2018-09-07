@@ -228,6 +228,7 @@
             [{title:'产品',id:'product',type:'select-opts',titlespan:4,colspan:8,relation: '',required:true, select: this.productList},
               {title:'预计下单日期',id:'orderDate',type:'time',format: 'yyyy-MM-dd',titlespan:4,colspan:8,required:true}],
             [{title:'客户需求描述',id:'descs',type:'textarea',titlespan:4,colspan:20,required:false}],
+            [{title:'竞争对手分析',id:'ca',type:'textarea',titlespan:4,colspan:20,required:false}],
             [{title:'负责人',id:'principal',type:'select-opts',titlespan:4,colspan:20,relation: '',required:true, select: this.userList}],
             [{title:'备注',id:'remark',type:'textarea',titlespan:4,colspan:20,required:false}]],
           button: [{
@@ -245,6 +246,7 @@
           product: row ? row.product : '',
           orderDate: row ? row.orderDate : '',
           descs: row ? row.descs : '',
+          ca: row ? row.ca : '',
           principal: row ? row.principal : this.userId,
           remark: row ? row.remark : ''
         }

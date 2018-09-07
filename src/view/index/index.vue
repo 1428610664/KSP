@@ -1,8 +1,8 @@
 <template>
 
   <div class="wrapper-content">
-    <div class="app-header b c3">
-      <Row type="flex" justify="end">
+    <div class="app-header b c3 bezier" :style="{paddingLeft: toggleMenu ? '0px' : '200px'}">
+      <!--<Row type="flex" justify="end">
         <i-col class="header-col"><Icon class="fz16" style="vertical-align: sub" type="md-time" /> {{systemDate}}</i-col>
         <i-col class="header-col"><a class="hover-c3" @click="feedbackEvent"><Icon class="fz16" style="vertical-align: sub" type="md-clipboard" /> 反馈问题</a></i-col>
         <i-col class="header-col">
@@ -16,13 +16,31 @@
             </DropdownMenu>
           </Dropdown>
         </i-col>
-      </Row>
+      </Row>-->
+      <div class="fbox">
+        <div class="flex">
+          <div class="fl m-l15 cursor-p" @click="toggleMenuEvent"><Icon type="md-menu" size="20" /></div>
+        </div>
+        <div class="header-col"><Icon class="fz16" style="vertical-align: sub" type="md-time" /> {{systemDate}}</div>
+        <div class="header-col"><a class="hover-c3" @click="feedbackEvent"><Icon class="fz16" style="vertical-align: sub" type="md-clipboard" /> 反馈问题</a></div>
+        <div class="header-col">
+          <Dropdown @on-click="handleSubmit">
+            <a href="javascript:void(0)" class="hover-c3"><Icon class="fz18" style="vertical-align: sub" type="ios-person" /> 管理员：{{userData ? userData.user.name : ''}}<Icon type="arrow-down-b"></Icon>
+            </a>
+            <DropdownMenu slot="list">
+              <DropdownItem name="info">企业信息</DropdownItem>
+              <DropdownItem name="modifyPsw" divided>修改密码</DropdownItem>
+              <DropdownItem  name="logout" divided>退出</DropdownItem>
+            </DropdownMenu>
+          </Dropdown>
+        </div>
+      </div>
     </div>
-    <div class="cloud-left-menu">
+    <div class="cloud-left-menu bezier"  :style="{left: toggleMenu ? '-200px' : '0px'}">
 
-      <div class="user-pic-wrapper posct cursor-p"><img src="https://www.juniwota.com/qj/mice/static/img/logo_core.f06b04f.gif"></div>
+      <div class="user-pic-wrapper posct cursor-p"><img src="../../common/images/logo.jpg"></div>
 
-      <Menu :active-name="activeNenu" :accordion="true" ref="refName" theme="dark" @on-select="changeMenu" class="menu-wrapper" style="height: calc( 100vh - 156px ); overflow-y: auto">
+      <Menu :active-name="activeNenu" :accordion="true" ref="refName" theme="dark" @on-select="changeMenu" class="menu-wrapper" style="height: calc( 100vh - 156px ); overflow: hidden">
         <template v-for="(v, k, i) in loadMian">
           <Submenu v-if="v.children != undefined" :name="v.path" class="text-a-left">
             <template slot="title">
@@ -39,7 +57,7 @@
       </Menu>
       <div class="footer c3 fz12 ct">Copyright ©广州科微</div>
     </div>
-    <div class="app-content">
+    <div class="app-content bezier" :style="{paddingLeft: toggleMenu ? '0px' : '200px'}">
       <transition name="fade-transform" mode="out-in">
         <router-view></router-view>
       </transition>
@@ -59,6 +77,7 @@
   export default {
     data() {
       return {
+        toggleMenu: false,
         systemDate: new Date().format('yyyy-MM-dd hh:mm:ss'),
         type: 0,
         permissionUrls: [],
@@ -263,6 +282,10 @@
         setInterval(() => {
           this.systemDate = new Date().format('yyyy-MM-dd hh:mm:ss')
         },1000)
+      },
+
+      toggleMenuEvent(){
+        this.toggleMenu = !this.toggleMenu
       }
     },
     components: {
@@ -319,5 +342,19 @@
 
   .menu-wrapper{
     width: 200px!important;
+  }
+
+  .bezier{
+    -webkit-transition: all 300ms cubic-bezier(0.000, 0.830, 0.485, 1); /* older webkit */
+    -webkit-transition: all 300ms cubic-bezier(0.000, 0.830, 0.485, 1.035);
+    -moz-transition: all 300ms cubic-bezier(0.000, 0.830, 0.485, 1.035);
+    -o-transition: all 300ms cubic-bezier(0.000, 0.830, 0.485, 1.035);
+    transition: all 300ms cubic-bezier(0.000, 0.830, 0.485, 1.035);
+
+    -webkit-transition-timing-function: cubic-bezier(0.000, 0.830, 0.485, 1); /* older webkit */
+    -webkit-transition-timing-function: cubic-bezier(0.000, 0.830, 0.485, 1.035);
+    -moz-transition-timing-function: cubic-bezier(0.000, 0.830, 0.485, 1.035);
+    -o-transition-timing-function: cubic-bezier(0.000, 0.830, 0.485, 1.035);
+    transition-timing-function: cubic-bezier(0.000, 0.830, 0.485, 1.035);
   }
 </style>

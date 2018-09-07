@@ -177,7 +177,7 @@
               {title:'密码',id:'passWord',type:'input',titlespan:3,colspan:9,required:true, readonly: type == 1}],
             [{title:'姓名',id:'name',type:'input',titlespan:3,colspan:9,required:true},
               {title:'所属部门',id:'department',type:'select-opts',titlespan:3,colspan:9,required:true, select: this.departmentList}],
-            [{title:'手机',id:'phone',type:'input',titlespan:3,colspan:9,required:false},
+            [{title:'手机',id:'phone',type:'input',maxLength: 11,titlespan:3,colspan:9,required:false},
               {title:'电话',id:'tel',type:'input',titlespan:3,colspan:9,required:false}],
             [{title:'邮箱',id:'email',type:'input',titlespan:3,colspan:9,required:false}],
             [{title:'用户角色',id:'role',type:'select-opts',titlespan:3,colspan:21,relation: '',required:true, select: this.rolesList}],
@@ -334,7 +334,7 @@
           }
           this.updataUser({id: newVal.id, passWord: newVal.newPsw})
         }else{ // 修改、新增用户
-          delete newVal.passWord
+          if(this.type == 1) delete newVal.passWord
           this.updataUser(newVal)
         }
       },

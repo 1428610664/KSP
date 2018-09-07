@@ -201,6 +201,7 @@
         placement: 'bottom',
         select: {
           sex: [{value:'男',label:'男'},{value:'女',label:'女'}],
+          rad: [{value:'R1',label:'R1'},{value:'R2',label:'R2'},{value:'R3',label:'R3'},{value:'A1',label:'A1'},{value:'A2',label:'A2'},{value:'A3',label:'A3'},{value:'D1',label:'D1'},{value:'D2',label:'D2'},{value:'D3',label:'D3'}],
           type: [{value:'0',label:'【枚举值维护】'},{value:'1',label:'渠道用户'},{value:'2',label:'终端用户'}],
           grade: [{value: '0', label: '枚举值维护'}, {value: '1', label: '支持'}, {value: '2', label: '一般'}, {value: '3', label: '中立'}, {value: '4', label: '反对'}],
           decisionRole: [{value: '0', label: '枚举值维护'}, {value: '1', label: '决策者'}, {value: '2', label: '影响者'}, {value: '3', label: '使用者'}, {value: '4', label: '内线'}, {value: '5', label: '关键人'}],

@@ -113,7 +113,7 @@
           limit: 20,
           offset: 1
         },
-        yearList: [{value: '2018', label: '2018'},{value: '2017', label: '2017'},{value: '2016', label: '2016'},{value: '2015', label: '2015'}],
+        yearList: [],
         userList: [],
         userListData: [],
         productList: [],    // 产品列表
@@ -557,6 +557,7 @@
     },
     created() {
       this.$nextTick(() => {
+        this.initParams()
         this.requestProduct()
         this.requestUsers()
         this.requestData()
@@ -576,6 +577,14 @@
       changeSize (v) {
         this.requestParam.limit = v
         this.requestData()
+      },
+      initParams(){
+        let d = new Date(), year = d.getFullYear(), yearList = []
+        for(let i = 0; i < 4; i++){
+          yearList.push({value: (year - i) + '', label: (year - i) + ''})
+        }
+        this.yearList = yearList
+        // this.requestParam.year = d.getFullYear() + ''
       },
       requestData(){
         this.requestAjax('get', 'salesTask', this.requestParam).then(res => {

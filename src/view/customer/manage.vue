@@ -150,6 +150,17 @@
           {title: 'SOW(%)',show: true, key: 'sow', width: 120, sortable: true},
           // {title: 'RFM', key: 'rfm', width: 120, sortable: true},
           {title: 'RAD',show: true, key: 'rad', width: 120, sortable: true},
+          {title: '最近购买时间',show: true, key: 'lastReceiptTime', minWidth: 160, sortable: true, render: (h, params) => {
+              return h('div', [
+                h('span', params.row.lastReceiptTime ? new Date(params.row.lastReceiptTime.time).format('yyyy-MM-dd hh:mm:ss') : '')
+              ])
+            }},
+          {title: '最近回款金额',show: true, key: 'lastReceiptPrice', minWidth: 160, sortable: true},
+          {title: '当年购买次数',show: true, key: 'nowYearReceiptCount', minWidth: 160, sortable: true},
+          {title: '当年回款金额',show: true, key: 'nowYearReceiptPrice', minWidth: 160, sortable: true},
+          {title: '所有回款金额',show: true, key: 'receiptTotal', minWidth: 160, sortable: true},
+          {title: '所有订单金额',show: true, key: 'ordersTotal', minWidth: 160, sortable: true},
+          {title: '欠款金额',show: true, key: 'arrears', minWidth: 160, sortable: true},
           {title: '电话',show: true, key: 'phone', width: 160, sortable: true, render: this.tdRender},
           {title: '传真',show: true, key: 'fax', width: 120, sortable: true, render: this.tdRender},
           {title: '网址',show: true, key: 'webUrl', width: 170, sortable: true, render: this.tdRender},
@@ -287,18 +298,19 @@
             [{title:'客户名称',id:'name',type:'input',titlespan:3,colspan:21,required:true}],
             [{title:'客户地址',id:'citys',type:'address',titlespan:3,colspan:21,required:true}],
             [{title:'详细地址',id:'address',type:'input',titlespan:3,colspan:21,required:false}],
-            [{title:'手机',id:'phone',type:'input',titlespan:3,colspan:9,required:false},
+            [{title:'电话',id:'phone',type:'input',titlespan:3,colspan:9,required:false},
               {title:'传真',id:'fax',type:'input',titlespan:3,colspan:9,required:false}],
             [{title:'网址',id:'webUrl',type:'input',titlespan:3,colspan:9,required:false},
               {title:'Email',id:'email',type:'input',titlespan:3,colspan:9,required:false}],
             [{title:'所属行业',id:'industry',type:'select-opts',titlespan:3,colspan:9,relation: '',required:false, select: this.industryList},
               {title:'分类',id:'type',type:'select-opts',titlespan:3,colspan:9,relation: '',required:false, select: this.classifyList}],
             [{title:'BP（万元）',id:'bp',type:'input',titlespan:3,colspan:9,required:false},
-              {title:'负责人',id:'principal',type:'select-opts',titlespan:3,colspan:9,relation: '', filterable: true,required:true, select: this.userList}],
-            [{title:'备注',id:'remark',type:'textarea',titlespan:3,colspan:21,required:false}],
-            [{title:'联系人信息',theme: true}],
-            [{title:'姓名',id:'a',type:'input',titlespan:3,colspan:9,required:false},
-              {title:'手机',id:'b',type:'input',titlespan:3,colspan:9,required:false}]],
+              {title:'Rad',id:'rad',type:'select',titlespan:3,colspan:9,relation: '',required:false}],
+            [{title:'负责人',id:'principal',type:'select-opts',titlespan:3,colspan:9,relation: '', filterable: true,required:true, select: this.userList}],
+            [{title:'备注',id:'remark',type:'textarea',titlespan:3,colspan:21,required:false}]],
+          addOptions = [[{title:'联系人信息',theme: true}],
+            [{title:'姓名',id:'contactName',type:'input',titlespan:3,colspan:9,required:false},
+              {title:'手机',id:'contactPhone',type:'input',maxLength: 11,titlespan:3,colspan:9,required:false}]],
           button = [{
             type: 'primary',
             title: '确认',
@@ -315,6 +327,7 @@
             break
           case 2:
             title = '新增客户'
+            opintions = opintions.concat(addOptions)
             break
           case 3:
             title = '客户决策树'
@@ -348,6 +361,7 @@
             webUrl: row ? row.webUrl : '',
             email: row ? row.email : '',
             bp: row ? row.bp : '',
+            rad: row ? row.rad : '',
             remark: row ? row.remark : '',
 
             industry:  row ? row.industry : '',

@@ -2,7 +2,7 @@
   <div class="login-wrapper posct">
     <div class="header-wrapper clear">
       <div class="logo-wrapper posct fl">
-        <img src="https://www.juniwota.com/qj/mice/static/img/logo_core.f06b04f.gif" height="46">
+        <img src="../../common/images/logo.jpg" height="46">
       </div>
       <div class="menu-list-wrapper fr c fz14">
         <a class="hover">首页</a> |

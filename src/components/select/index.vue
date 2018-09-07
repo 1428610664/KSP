@@ -53,6 +53,7 @@
     },
     data() {
       return {
+        mark: false,
         v1: this.fromVal[this.options[0].id],
         v2: this.fromVal[this.options[1].id],
         select1: [],
@@ -65,6 +66,8 @@
           this.v2 = ''
           this.requestVice(v)
           this.$emit('change', this.options[0].id, v)
+          if(this.mark) v2 = ''
+          this.mark = true
         }
       },
       v2(v){
