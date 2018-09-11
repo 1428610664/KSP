@@ -240,7 +240,7 @@
         this.inputForm.value = {
           name: row ? row.name : '',
           customerId: row ? row.customerId : '',
-          contact: row ? type == 1 ? row.contactId: row.contact : '',
+          contact: row ? type == 1 ? row.contactId: '' : '',
           price: row ? row.price : 0,
           winRate: row ? row.winRate : '10%',
           product: row ? row.product : '',
@@ -250,6 +250,7 @@
           principal: row ? row.principal : this.userId,
           remark: row ? row.remark : ''
         }
+        console.log(JSON.stringify(this.inputForm.value))
         if(type == 1) {
           if(row.propsVal) this._setPropsVal(JSON.parse(row.propsVal))
           this.inputForm.value.id = row.id

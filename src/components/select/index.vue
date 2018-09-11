@@ -56,6 +56,7 @@
         mark: false,
         v1: this.fromVal[this.options[0].id],
         v2: this.fromVal[this.options[1].id],
+        v2Vlaue: '',
         select1: [],
         select2: []
       }
@@ -66,7 +67,7 @@
           this.v2 = ''
           this.requestVice(v)
           this.$emit('change', this.options[0].id, v)
-          if(this.mark) v2 = ''
+          // if(this.mark) v2 = ''
           this.mark = true
         }
       },
@@ -77,7 +78,7 @@
         handler(v) {
           this.v1 = this.fromVal[v[0].id]
           this.v2 = this.fromVal[v[1].id]
-          v2 = this.fromVal[v[1].id]
+          this.v2Vlaue = this.fromVal[v[1].id]
         },
         deep: true
       },
@@ -86,7 +87,7 @@
           if(this.fromVal[this.options[0].id] != this.v1 || this.fromVal[this.options[1].id] != this.v2){
             this.v1 = this.fromVal[this.options[0].id]
             this.v2 = this.fromVal[this.options[1].id]
-            v2 = this.fromVal[this.options[1].id]
+            this.v2Vlaue = this.fromVal[this.options[1].id]
           }
         },
         deep: true
@@ -112,7 +113,7 @@
         this.requestAjax('get', this.options[1].url, parms).then(res => {
           if(res.success) {
             this.select2 = this._parseData(res.data.rows)
-            if(v2) this.v2 = v2
+            if(this.v2Vlaue) this.v2 = this.v2Vlaue
           }
         })
       },

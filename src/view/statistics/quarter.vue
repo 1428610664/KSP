@@ -19,12 +19,18 @@
         <Select v-model="principalIds" :multiple="true" :filterable="true" style="width:160px" class="m-r5">
           <Option v-for="item in userList" :value="item.value" :key="item.value">{{ item.label }}</Option>
         </Select>-->
-        <span class="m-l15 m-r10">选择产品线：</span>
+        <!--<span class="m-l15 m-r10">选择产品线：</span>
         <Select v-model="proIds" :multiple="true" :filterable="true" style="width:160px">
           <Option v-for="item in products" :value="item.value" :key="item.value">{{ item.label }}</Option>
-        </Select>
+        </Select>-->
         <Button type="primary" @click="searchEvent">查询</Button>
       </div>
+    </div>
+    <div class="fbox m-t10 c3">
+      <div class="m-l15 m-r10">选择产品线：</div>
+      <CheckboxGroup class="flex" v-model="proIds" style="vertical-align: sub">
+        <Checkbox  v-for="(item, index) in products" :label="item.value" :key="index">{{item.label}}</Checkbox>
+      </CheckboxGroup>
     </div>
 
     <div class="m-t10">
@@ -101,8 +107,8 @@
           limit: 20,
           offset: 1
         },
-        linkOpts: [{title:'部门：',id:'departmentIds',type:'select-opts', titlespan:4,colspan:8,required:false, url: 'departmentList'},
-          {title:'负责人：',id:'principalIds',type:'select-opts',titlespan:4,colspan:8,required:false, url: 'users',parmsId: 'department'}],
+        linkOpts: [{title:'部门',id:'departmentIds',type:'select-opts', titlespan:3,colspan:9,required:false, url: 'departmentList'},
+          {title:'负责人',id:'principalIds',type:'select-opts',titlespan:4,colspan:8,required:false, url: 'users',parmsId: 'department'}],
 
         yearList: [],
         quarterList: [],
@@ -359,7 +365,7 @@
         // this.principalIds = [this.userId]
         this.requestParam.principalIds = this.userId
         this.requestParam.departmentIds = this.userData.user.department
-        this.requestData()
+        // this.requestData()
       })
     },
     methods: {
@@ -416,10 +422,18 @@
       requestCommons(){
         this.requestCommon({queryDepartment: true,queryUsers: true,queryProduct: true}, (res)=> {
           if(res.success) {
+            let proIds = []
+            res.data.products.forEach((item) => {
+              proIds.push(item.value)
+            })
+            this.proIds = proIds
             this.products = res.data.products
             // this.departments = res.data.departments
             // this.userList= res.data.users
             this.requestParam.principalIds = this.userId
+
+            this.requestParam.proIds = this.proIds.join(',')
+            this.requestData()
           }
         })
       },
